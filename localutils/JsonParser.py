@@ -107,7 +107,7 @@ class JsonParser:
 		while self.input[self.i] in self.WHITESPACE: self.i += 1  # advance through whitespace
 
 		literal = ''
-		while self.input[self.i] not in (self.WHITESPACE + [self.COMMA] + [self.CLOSELIST]):
+		while self.input[self.i] not in (self.WHITESPACE + [self.COMMA] + [self.CLOSELIST] + [self.CLOSEOBJECT]):
 			literal += self.input[self.i]
 			self.i += 1
 
