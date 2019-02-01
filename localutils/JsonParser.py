@@ -88,6 +88,10 @@ class JsonParser:
 			elif self.input[self.i] == self.DOUBLEQUOTE:
 				lst.append(self.parseIdentifier())
 
+			# is it a literal?
+			elif self.input[self.i] not in (self.WHITESPACE + [ self.COMMA ]):
+				lst.append(self.parseLiteral())
+
 			self.i += 1
 
 		return lst
