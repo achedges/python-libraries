@@ -1,144 +1,150 @@
+class JsonToken:
+
+	def __init__(self, token: str, text: str):
+		self.token = token
+		self.text = text
+
+	def __repr__(self):
+		return '{0} ({1})'.format(self.token, self.text)
+
 class JsonParser:
-	def __init__(self, jsonstring):
+
+	def __init__(self, jsonstring: str):
+		self.input = jsonstring.strip()
+		self.n = len(self.input)
 		self.i = 0
-		self.n = len(jsonstring)
-		self.input = jsonstring
 		self.result = dict()
 
-		self.OPENOBJECT = '{'
-		self.CLOSEOBJECT = '}'
-		self.OPENLIST = '['
-		self.CLOSELIST = ']'
-		self.COLON = ':'
-		self.COMMA = ','
-		self.DOUBLEQUOTE = '"'
-		self.WHITESPACE = [' ', '\t', '\n', '\r']
+		self.__stream = None
+
+
+	def __nextToken(self) -> JsonToken:
+		self.i += 1
+		if self.i < len(self.__stream):
+			return self.__stream[self.i]
+		else:
+			return JsonToken('EOF', 'EOF')
+
 
 	def parse(self):
-		self.result = self.parseObject()
-		return
+		self.__stream = self.__tokenizeInput()
+		self.i = 0
 
-	def parseObject(self):
-		# an 'object' is some number of key/value pairs, separated by a comma
-		obj = dict()
+		if self.__stream[0].token != '{':
+			raise Exception("JSON documents must start with '{'")
 
-		while self.i < self.n:
-			if self.input[self.i] in [self.OPENOBJECT, self.COMMA]:
-				# find a key/value pair
-				k = self.parseKey()
-				v = self.parseValue()
+		self.result = self.__parseObject()
+		return self.result
 
-				obj[k] = v
 
-			elif self.input[self.i] == self.CLOSEOBJECT:
-				break
+	def __parseObject(self):
+		obj = {}
 
-			self.i += 1
+		key = self.__nextToken()
+
+		while key.token != '}':
+
+			if key.token == ',':
+				key = self.__nextToken()
+
+			separator = self.__nextToken()
+			value = self.__nextToken()
+
+			if key.token != 'ID':
+				raise Exception('Invalid object key: {0}'.format(key.token))
+			if separator.token != ':':
+				raise Exception('Invalid key-value separator: {0}'.format(separator.token))
+
+			if value.token == '{':
+				obj[key.text] = self.__parseObject()
+			elif value.token == '[':
+				obj[key.text] = self.__parseList()
+			elif value.token == 'ID':
+				obj[key.text] = value.text
+			elif value.token == 'LIT':
+				obj[key.text] = JsonParser.__parseLiteral(value.text)
+
+			key = self.__nextToken()
 
 		return obj
 
-	def parseKey(self):
-		# a 'key' is some text identifier enclosed with double quotes
-		while self.input[self.i] != self.DOUBLEQUOTE:
-			self.i += 1
 
-		self.i += 1
-		key = ''
+	def __parseList(self):
+		lst = []
+		token = self.__nextToken()
+		while token.token != ']':
+			if token.token == 'ID':
+				lst.append(token.text)
+			elif token.token == 'LIT':
+				lst.append(JsonParser.__parseLiteral(token.text))
+			elif token.token == '{':
+				lst.append(self.__parseObject())
+			elif token.token == '[':
+				lst.append(self.__parseList())
 
-		while self.input[self.i] != self.COLON:
-			if self.input[self.i] != self.DOUBLEQUOTE:
-				key += self.input[self.i]
-			self.i += 1
-
-		self.i += 1
-		return key
-
-	def parseValue(self):
-		# a 'value' is:
-		#	a sub-object ('{...}')
-		# 	a list ('[...]')
-		#	a quoted identifier
-		#	a literal value (1, 12.36, true, ...)
-		while self.input[self.i] in self.WHITESPACE:
-			self.i += 1  # advance through whitespace
-
-		if self.input[self.i] == self.OPENOBJECT:
-			return self.parseObject()
-
-		elif self.input[self.i] == self.OPENLIST:
-			return self.parseList()
-
-		elif self.input[self.i] == self.DOUBLEQUOTE:
-			return self.parseIdentifier()
-
-		else:
-			return self.parseLiteral()
-
-	def parseList(self):
-		while self.input[self.i] in (self.WHITESPACE + [self.OPENLIST]): self.i += 1  # advance through whitespace and '['
-
-		lst = list()
-
-		while self.input[self.i] != self.CLOSELIST:
-			# is it a new object?
-			if self.input[self.i] == self.OPENOBJECT:
-				lst.append(self.parseObject())
-
-			# is it a quoted identifier?
-			elif self.input[self.i] == self.DOUBLEQUOTE:
-				lst.append(self.parseIdentifier())
-
-			# is it a literal?
-			elif self.input[self.i] not in (self.WHITESPACE + [ self.COMMA ]):
-				lst.append(self.parseLiteral())
-
-			self.i += 1
+			token = self.__nextToken()
 
 		return lst
 
-	def parseIdentifier(self):
-		self.i += 1
-
-		identifier = ''
-
-		while self.input[self.i] != self.DOUBLEQUOTE:
-			identifier += self.input[self.i]
-			self.i += 1
-
-		return identifier
-
-	def parseLiteral(self):
-		while self.input[self.i] in self.WHITESPACE: self.i += 1  # advance through whitespace
-
-		literal = ''
-		while self.input[self.i] not in (self.WHITESPACE + [self.COMMA] + [self.CLOSELIST] + [self.CLOSEOBJECT]):
-			literal += self.input[self.i]
-			self.i += 1
-
-		if self.input[self.i] == self.COMMA:
-			self.i -= 1
-
-		if literal.lower() == 'null':
-			return None
-
-		elif literal.lower() == 'true':
-			return True
-
-		elif literal.lower() == 'false':
-			return False
-
-		elif '.' in literal:
-			return float(literal)
-
-		else:
-			return int(literal)
 
 	@staticmethod
-	def printObject(obj, indent=0):
-		TAB = '   '
-		for k in obj.keys():
-			print('{0}{1}:'.format(TAB * indent, k))
-			if type(obj[k]) is dict:
-				JsonParser.printObject(obj[k], indent + 1)
+	def __parseLiteral(text):
+		if text == 'true':
+			return True
+		elif text == 'false':
+			return False
+		elif text == 'null':
+			return None
+		elif '.' in text:
+			return float(text)
+		else:
+			return int(text)
+
+
+	def __tokenizeInput(self):
+
+		_WS = [ ' ', '\t', '\n', '\r' ]
+		_TK = [ '{', '}', '[', ']', ',', ':' ]
+		tokenstream = []
+
+		while self.i < self.n:
+			if self.input[self.i] in _WS:
+				self.i += 1
+				continue
+
+			if self.input[self.i] in _TK:
+				tokenstream.append(JsonToken(self.input[self.i], self.input[self.i]))
+
+			elif self.input[self.i] == '"':
+				_id = ''
+				self.i += 1
+				while self.i < self.n:
+					if self.input[self.i] == '"' and self.input[self.i-1] != '\\':
+						break
+
+					if self.input[self.i] == '"' and self.input[self.i-1] == '\\':
+						_id[-1] = '"' # double-quotes are escaped, so replace the backslash
+					else:
+						_id += self.input[self.i]
+
+					self.i += 1
+
+				tokenstream.append(JsonToken('ID', _id))
+
 			else:
-				print('{0}{1}'.format(TAB * (indent + 1), obj[k]))
+				_lit = self.input[self.i]
+				self.i += 1
+				while self.i < self.n:
+					if self.input[self.i] in [ ',', ']', '}' ]:
+						self.i -= 1 # back-up so we can capture the ending token in the stream
+						break
+					elif self.input[self.i] not in _WS:
+						_lit += self.input[self.i]
+
+					self.i += 1
+
+				tokenstream.append(JsonToken('LIT', _lit))
+
+			self.i += 1
+
+		return tokenstream
