@@ -107,6 +107,9 @@ class JsonParser:
 		_TK = [ '{', '}', '[', ']', ',', ':' ]
 		tokenstream = []
 
+		while self.input[self.i] != '{':
+			self.i += 1 # advance to the first open brace
+
 		while self.i < self.n:
 			if self.input[self.i] in _WS:
 				self.i += 1
