@@ -14,8 +14,7 @@ class JsonParser:
 		self.n = len(self.input)
 		self.i = 0
 		self.result = dict()
-
-		self.__stream = None
+		self.__stream = []
 
 
 	def __nextToken(self) -> JsonToken:
@@ -27,7 +26,7 @@ class JsonParser:
 
 
 	def parse(self):
-		self.__stream = self.__tokenizeInput()
+		self.__tokenizeInput()
 		self.i = 0
 
 		if self.__stream[0].token != '{':
@@ -105,7 +104,6 @@ class JsonParser:
 
 		_WS = [ ' ', '\t', '\n', '\r' ]
 		_TK = [ '{', '}', '[', ']', ',', ':' ]
-		tokenstream = []
 
 		while self.input[self.i] != '{':
 			self.i += 1 # advance to the first open brace
@@ -116,7 +114,7 @@ class JsonParser:
 				continue
 
 			if self.input[self.i] in _TK:
-				tokenstream.append(JsonToken(self.input[self.i], self.input[self.i]))
+				self.__stream.append(JsonToken(self.input[self.i], self.input[self.i]))
 
 			elif self.input[self.i] == '"':
 				_id = ''
@@ -132,7 +130,7 @@ class JsonParser:
 
 					self.i += 1
 
-				tokenstream.append(JsonToken('ID', _id))
+				self.__stream.append(JsonToken('ID', _id))
 
 			else:
 				_lit = self.input[self.i]
@@ -146,8 +144,8 @@ class JsonParser:
 
 					self.i += 1
 
-				tokenstream.append(JsonToken('LIT', _lit))
+				self.__stream.append(JsonToken('LIT', _lit))
 
 			self.i += 1
 
-		return tokenstream
+		return
