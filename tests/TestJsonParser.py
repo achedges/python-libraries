@@ -16,7 +16,7 @@ class Test(unittest.TestCase):
 				"list": [
 					"one",
 					"two",
-					"three"
+					"\\"three\\""
 				]
 			}
 		}'''
@@ -48,6 +48,6 @@ class Test(unittest.TestCase):
 		self.assertEqual(len(result['object']['list']), 3, msg='[list] list is not the right size')
 		self.assertEqual(result['object']['list'][0], 'one', msg='Incorrect value found at [object][list][0]')
 		self.assertEqual(result['object']['list'][1], 'two', msg='Incorrect value found at [object][list][1]')
-		self.assertEqual(result['object']['list'][2], 'three', msg='Incorrect value found at [object][list][2]')
+		self.assertEqual(result['object']['list'][2], '"three"', msg='Incorrect value found at [object][list][2]')
 
 		return

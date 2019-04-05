@@ -50,9 +50,9 @@ class JsonParser:
 			value = self.__nextToken()
 
 			if key.token != 'ID':
-				raise Exception('Invalid object key: {0}'.format(key.token))
+				raise Exception('Invalid token detected for object key: {0}'.format(key.token))
 			if separator.token != ':':
-				raise Exception('Invalid key-value separator: {0}'.format(separator.token))
+				raise Exception('Invalid token detected for key-value separator: {0}'.format(separator.token))
 
 			if value.token == '{':
 				obj[key.text] = self.__parseObject()
@@ -82,6 +82,8 @@ class JsonParser:
 				lst.append(self.__parseList())
 
 			token = self.__nextToken()
+			if token.token == 'EOF':
+				break
 
 		return lst
 
@@ -117,7 +119,7 @@ class JsonParser:
 				self.__stream.append(JsonToken(self.input[self.i], self.input[self.i]))
 
 			elif self.input[self.i] == '"':
-				_id = ''
+				_id = []
 				self.i += 1
 				while self.i < self.n:
 					if self.input[self.i] == '"' and self.input[self.i-1] != '\\':
@@ -126,11 +128,11 @@ class JsonParser:
 					if self.input[self.i] == '"' and self.input[self.i-1] == '\\':
 						_id[-1] = '"' # double-quotes are escaped, so replace the backslash
 					else:
-						_id += self.input[self.i]
+						_id.append(self.input[self.i])
 
 					self.i += 1
 
-				self.__stream.append(JsonToken('ID', _id))
+				self.__stream.append(JsonToken('ID', ''.join(_id)))
 
 			else:
 				_lit = self.input[self.i]
