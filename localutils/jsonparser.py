@@ -17,14 +17,6 @@ class JsonParser:
 		self.__stream = []
 
 
-	def __nextToken(self) -> JsonToken:
-		self.i += 1
-		if self.i < len(self.__stream):
-			return self.__stream[self.i]
-		else:
-			return JsonToken('EOF', 'EOF')
-
-
 	def parse(self):
 		self.__tokenizeInput()
 		self.i = 0
@@ -34,72 +26,6 @@ class JsonParser:
 
 		self.result = self.__parseObject()
 		return self.result
-
-
-	def __parseObject(self):
-		obj = {}
-
-		key = self.__nextToken()
-
-		while key.token != '}':
-
-			if key.token == ',':
-				key = self.__nextToken()
-
-			separator = self.__nextToken()
-			value = self.__nextToken()
-
-			if key.token != 'ID':
-				raise Exception('Invalid token detected for object key: {0}'.format(key.token))
-			if separator.token != ':':
-				raise Exception('Invalid token detected for key-value separator: {0}'.format(separator.token))
-
-			if value.token == '{':
-				obj[key.text] = self.__parseObject()
-			elif value.token == '[':
-				obj[key.text] = self.__parseList()
-			elif value.token == 'ID':
-				obj[key.text] = value.text
-			elif value.token == 'LIT':
-				obj[key.text] = JsonParser.__parseLiteral(value.text)
-
-			key = self.__nextToken()
-
-		return obj
-
-
-	def __parseList(self):
-		lst = []
-		token = self.__nextToken()
-		while token.token != ']':
-			if token.token == 'ID':
-				lst.append(token.text)
-			elif token.token == 'LIT':
-				lst.append(JsonParser.__parseLiteral(token.text))
-			elif token.token == '{':
-				lst.append(self.__parseObject())
-			elif token.token == '[':
-				lst.append(self.__parseList())
-
-			token = self.__nextToken()
-			if token.token == 'EOF':
-				break
-
-		return lst
-
-
-	@staticmethod
-	def __parseLiteral(text):
-		if text == 'true':
-			return True
-		elif text == 'false':
-			return False
-		elif text == 'null':
-			return None
-		elif '.' in text:
-			return float(text)
-		else:
-			return int(text)
 
 
 	def __tokenizeInput(self):
@@ -151,3 +77,89 @@ class JsonParser:
 			self.i += 1
 
 		return
+
+
+
+	def __nextToken(self) -> JsonToken:
+		self.i += 1
+		if self.i < len(self.__stream):
+			return self.__stream[self.i]
+		else:
+			return JsonToken('EOF', 'EOF')
+
+
+	@staticmethod
+	def __parseLiteral(text):
+		if text == 'true':
+			return True
+		elif text == 'false':
+			return False
+		elif text == 'null':
+			return None
+		elif '.' in text:
+			return float(text)
+		else:
+			return int(text)
+
+
+	def __parseList(self):
+		lst = []
+		token = self.__nextToken()
+		while token.token != ']':
+			if token.token == 'ID':
+				lst.append(token.text)
+			elif token.token == 'LIT':
+				lst.append(JsonParser.__parseLiteral(token.text))
+			elif token.token == '{':
+				lst.append(self.__parseObject())
+			elif token.token == '[':
+				lst.append(self.__parseList())
+
+			token = self.__nextToken()
+			if token.token == 'EOF':
+				break
+
+		return lst
+
+
+	def __parseObject(self):
+		obj = {}
+
+		key = self.__nextToken()
+
+		while key.token != '}':
+
+			if key.token == ',':
+				key = self.__nextToken()
+
+			separator = self.__nextToken()
+			value = self.__nextToken()
+
+			if key.token != 'ID':
+				raise Exception('Invalid token detected for object key: {0}'.format(key.token))
+			if separator.token != ':':
+				raise Exception('Invalid token detected for key-value separator: {0}'.format(separator.token))
+
+			if value.token == '{':
+				obj[key.text] = self.__parseObject()
+			elif value.token == '[':
+				obj[key.text] = self.__parseList()
+			elif value.token == 'ID':
+				obj[key.text] = value.text
+			elif value.token == 'LIT':
+				obj[key.text] = JsonParser.__parseLiteral(value.text)
+
+			key = self.__nextToken()
+
+		return obj
+
+
+	def parse(self):
+		self.__tokenizeInput()
+		self.i = 0
+
+		if self.__stream[0].token != '{':
+			raise Exception("JSON documents must start with '{'")
+
+		self.result = self.__parseObject()
+		return self.result
