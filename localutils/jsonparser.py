@@ -79,7 +79,6 @@ class JsonParser:
 		return
 
 
-
 	def __nextToken(self) -> JsonToken:
 		self.i += 1
 		if self.i < len(self.__stream):
@@ -154,12 +153,57 @@ class JsonParser:
 		return obj
 
 
-	def parse(self):
-		self.__tokenizeInput()
-		self.i = 0
+	@staticmethod
+	def serializeJsonObject(jsonobj: dict) -> str:
+		if type(jsonobj) is not dict:
+			raise Exception('JSON serializer needs an object input')
 
-		if self.__stream[0].token != '{':
-			raise Exception("JSON documents must start with '{'")
+		return JsonParser.__serializeObject(jsonobj, 1)
 
-		self.result = self.__parseObject()
-		return self.result
+
+	@staticmethod
+	def __serializeObject(obj: dict, indent:int=0) -> str:
+		ret = ['{', '\n']
+		for key in obj:
+			ret.append('{0}"{1}":'.format('\t' * indent, key))
+			if type(obj[key]) is dict:
+				ret.append(JsonParser.__serializeObject(obj[key], indent+1))
+			elif type(obj[key]) is list:
+				ret.append(JsonParser.__serializeList(obj[key], indent+1))
+			elif type(obj[key]) is str:
+				ret.append('"{0}"'.format(obj[key]))
+			elif type(obj[key]) is bool:
+				ret.append('true' if obj[key] else 'false')
+			elif obj[key] is None:
+				ret.append('null')
+			else:
+				ret.append('{0}'.format(obj[key]))
+			ret.append(',')
+			ret.append('\n')
+
+		ret[-2] = '}' # replace last comma with closing brace
+		return ''.join(ret)
+
+
+	@staticmethod
+	def __serializeList(lst: list, indent:int=0):
+		ret = ['[', '\n']
+		for item in lst:
+			ret.append('\t' * indent)
+			if type(item) is dict:
+				ret.append(JsonParser.__serializeObject(item, indent+1))
+			elif type(item) is list:
+				ret.append(JsonParser.__serializeList(item, indent+1))
+			elif type(item) is str:
+				ret.append('"{0}"'.format(item))
+			elif type(item) is bool:
+				ret.append('true' if item else 'false')
+			elif item is None:
+				ret.append('null')
+			else:
+				ret.append(str(item))
+			ret.append(',')
+			ret.append('\n')
+
+		ret[-2] = '\n{0}]'.format('\t' * (indent-1))
+		return ''.join(ret)
