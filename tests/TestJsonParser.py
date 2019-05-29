@@ -63,20 +63,19 @@ class Test(unittest.TestCase):
 		json['list'] = [ 'list-value', 879, 0.12, False, None ]
 
 		expected = '''{
-	"string":"string-value",
-	"integer":123,
-	"float":4.56,
-	"bool":true,
-	"null":null,
-	"list":[
+	"string": "string-value",
+	"integer": 123,
+	"float": 4.56,
+	"bool": true,
+	"null": null,
+	"list": [
 		"list-value",
 		879,
 		0.12,
 		false,
 		null
 	]
-}
-'''
+}'''
 
 		jsonstring = jsonparser.JsonParser.serializeJsonObject(jsonobj=json)
 		self.assertEqual(expected, jsonstring, msg='Serialized JSON object does not match input')

@@ -164,46 +164,48 @@ class JsonParser:
 	@staticmethod
 	def __serializeObject(obj: dict, indent:int=0) -> str:
 		ret = ['{', '\n']
-		for key in obj:
-			ret.append('{0}"{1}":'.format('\t' * indent, key))
-			if type(obj[key]) is dict:
-				ret.append(JsonParser.__serializeObject(obj[key], indent+1))
-			elif type(obj[key]) is list:
-				ret.append(JsonParser.__serializeList(obj[key], indent+1))
-			elif type(obj[key]) is str:
-				ret.append('"{0}"'.format(obj[key]))
-			elif type(obj[key]) is bool:
-				ret.append('true' if obj[key] else 'false')
-			elif obj[key] is None:
-				ret.append('null')
-			else:
-				ret.append('{0}'.format(obj[key]))
-			ret.append(',')
-			ret.append('\n')
+		keys = list(obj.keys())
+		for i in range(len(keys)):
+			ret.append('{0}"{1}": {2}'.format('\t' * indent, keys[i], JsonParser.__serializeValue(obj[keys[i]], indent)))
 
-		ret[-2] = '}' # replace last comma with closing brace
+			if i < len(keys) - 1:
+				ret.append(',')
+
+			if indent > 0:
+				ret.append('\n')
+
+		ret.append('{0}}}'.format('\t' * (indent-1)))
 		return ''.join(ret)
 
 
 	@staticmethod
 	def __serializeList(lst: list, indent:int=0):
 		ret = ['[', '\n']
-		for item in lst:
+		for i in range(len(lst)):
 			ret.append('\t' * indent)
-			if type(item) is dict:
-				ret.append(JsonParser.__serializeObject(item, indent+1))
-			elif type(item) is list:
-				ret.append(JsonParser.__serializeList(item, indent+1))
-			elif type(item) is str:
-				ret.append('"{0}"'.format(item))
-			elif type(item) is bool:
-				ret.append('true' if item else 'false')
-			elif item is None:
-				ret.append('null')
-			else:
-				ret.append(str(item))
-			ret.append(',')
-			ret.append('\n')
+			ret.append(JsonParser.__serializeValue(lst[i], indent))
 
-		ret[-2] = '\n{0}]'.format('\t' * (indent-1))
+			if i < len(lst) - 1:
+				ret.append(',')
+
+			if indent > 0:
+				ret.append('\n')
+
+		ret.append('{0}]'.format('\t' * (indent-1)))
 		return ''.join(ret)
+
+
+	@staticmethod
+	def __serializeValue(value, indent:int=0):
+		if type(value) is dict:
+			return JsonParser.__serializeObject(value, indent+1 if indent > 0 else indent)
+		elif type(value) is list:
+			return JsonParser.__serializeList(value, indent+1 if indent > 0 else indent)
+		elif type(value) is str:
+			return '"{0}"'.format(value)
+		elif type(value) is bool:
+			return 'true' if value else 'false'
+		elif value is None:
+			return 'null'
+		else:
+			return str(value)
