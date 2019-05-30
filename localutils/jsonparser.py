@@ -154,16 +154,20 @@ class JsonParser:
 
 
 	@staticmethod
-	def serializeJsonObject(jsonobj: dict) -> str:
+	def serializeJsonObject(jsonobj: dict, noformat:bool=False) -> str:
 		if type(jsonobj) is not dict:
 			raise Exception('JSON serializer needs an object input')
 
-		return JsonParser.__serializeObject(jsonobj, 1)
+		return JsonParser.__serializeObject(jsonobj, 0 if noformat else 1)
 
 
 	@staticmethod
 	def __serializeObject(obj: dict, indent:int=0) -> str:
-		ret = ['{', '\n']
+		ret = ['{']
+
+		if indent > 0:
+			ret.append('\n')
+
 		keys = list(obj.keys())
 		for i in range(len(keys)):
 			ret.append('{0}"{1}": {2}'.format('\t' * indent, keys[i], JsonParser.__serializeValue(obj[keys[i]], indent)))
@@ -180,7 +184,11 @@ class JsonParser:
 
 	@staticmethod
 	def __serializeList(lst: list, indent:int=0):
-		ret = ['[', '\n']
+		ret = ['[']
+
+		if indent > 0:
+			ret.append('\n')
+
 		for i in range(len(lst)):
 			ret.append('\t' * indent)
 			ret.append(JsonParser.__serializeValue(lst[i], indent))
