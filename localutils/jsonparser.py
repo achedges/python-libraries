@@ -7,6 +7,7 @@ class JsonToken:
 	def __repr__(self):
 		return '{0} ({1})'.format(self.token, self.text)
 
+
 class JsonParser:
 
 	def __init__(self, jsonstring: str):

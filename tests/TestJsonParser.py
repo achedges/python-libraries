@@ -1,4 +1,4 @@
-from localutils import jsonparser
+from localutils.jsonparser import JsonParser
 from unittest import TestCase
 
 
@@ -9,7 +9,7 @@ class Test(TestCase):
 		with open('parse-obj.json', 'r') as jsonFile:
 			json = jsonFile.read()
 
-		parser = jsonparser.JsonParser(jsonstring=json)
+		parser = JsonParser(jsonstring=json)
 		parser.parse()
 		result = parser.result
 
@@ -46,7 +46,7 @@ class Test(TestCase):
 		with open('parse-list.json', 'r') as jsonFile:
 			json = jsonFile.read()
 
-		parser = jsonparser.JsonParser(json)
+		parser = JsonParser(json)
 		parser.parse()
 		result = parser.result
 
@@ -75,13 +75,13 @@ class Test(TestCase):
 		with open('serialized-full.json', 'r') as serializedFile:
 			expected = serializedFile.read()
 
-		jsonstring = jsonparser.JsonParser.serializeJsonObject(jsonobj=json)
+		jsonstring = JsonParser.serializeJsonObject(jsonobj=json)
 		self.assertEqual(expected, jsonstring, msg='Serialized JSON object does not match input')
 
 		with open('serialized-min.json', 'r') as serializedFile:
 			expected = serializedFile.read()
 
-		jsonstring = jsonparser.JsonParser.serializeJsonObject(jsonobj=json, noformat=True)
+		jsonstring = JsonParser.serializeJsonObject(jsonobj=json, noformat=True)
 		self.assertEqual(expected, jsonstring, msg='Serialized JSON object (no-format) does not match input')
 
 		return
