@@ -21,10 +21,15 @@ class JsonParser:
 		self.__tokenizeInput()
 		self.i = 0
 
-		if self.__stream[0].token != '{':
-			raise Exception("JSON documents must start with '{'")
+		if self.__stream[0].token == '{':
+			self.result = self.__parseObject()
 
-		self.result = self.__parseObject()
+		elif self.__stream[0].token == '[':
+			self.result = self.__parseList()
+
+		else:
+			raise Exception("JSON documents must start with either '{' or '['")
+
 		return self.result
 
 
@@ -33,8 +38,8 @@ class JsonParser:
 		_WS = [ ' ', '\t', '\n', '\r' ]
 		_TK = [ '{', '}', '[', ']', ',', ':' ]
 
-		while self.input[self.i] != '{':
-			self.i += 1 # advance to the first open brace
+		while self.input[self.i] not in [ '{', '[' ]:
+			self.i += 1 # advance to the first open brace/bracket
 
 		while self.i < self.n:
 			if self.input[self.i] in _WS:

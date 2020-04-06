@@ -1,25 +1,13 @@
-import unittest
 from localutils import jsonparser
+from unittest import TestCase
 
 
-class Test(unittest.TestCase):
+class Test(TestCase):
 
-	def testParser(self):
+	def testObjectParser(self):
 
-		json = '''{
-			"object": {
-				"string": "stringvalue",
-				"int": 1,
-				"float": 1.123,
-				"bool": true,
-				"null": null,
-				"list": [
-					"one",
-					"two",
-					"\\"three\\""
-				]
-			}
-		}'''
+		with open('parse-obj.json', 'r') as jsonFile:
+			json = jsonFile.read()
 
 		parser = jsonparser.JsonParser(jsonstring=json)
 		parser.parse()
@@ -53,6 +41,28 @@ class Test(unittest.TestCase):
 		return
 
 
+	def testListParser(self):
+
+		with open('parse-list.json', 'r') as jsonFile:
+			json = jsonFile.read()
+
+		parser = jsonparser.JsonParser(json)
+		parser.parse()
+		result = parser.result
+
+		self.assertTrue(isinstance(result, list), msg='Result should be a list')
+		self.assertEqual(len(result), 2, msg='Result list size is incorrect')
+
+		for i in range(len(result)):
+			self.assertTrue(isinstance(result[i], dict), msg='List item is not an object')
+			self.assertTrue('key' in result[i], msg='Object does not contain key')
+			self.assertTrue('value' in result[i], msg='Object does not contain value')
+			self.assertEqual(result[i]['key'], f'some-key-{i}', msg='Incorrect key')
+			self.assertEqual(result[i]['value'], f'some-value-{i}', msg='Incorrect value')
+
+		return
+
+
 	def testSerializer(self):
 		json = dict()
 		json['string'] = 'string-value'
@@ -62,25 +72,14 @@ class Test(unittest.TestCase):
 		json['null'] = None
 		json['list'] = [ 'list-value', 879, 0.12, False, None ]
 
-		expected = '''{
-	"string": "string-value",
-	"integer": 123,
-	"float": 4.56,
-	"bool": true,
-	"null": null,
-	"list": [
-		"list-value",
-		879,
-		0.12,
-		false,
-		null
-	]
-}'''
+		with open('serialized-full.json', 'r') as serializedFile:
+			expected = serializedFile.read()
 
 		jsonstring = jsonparser.JsonParser.serializeJsonObject(jsonobj=json)
 		self.assertEqual(expected, jsonstring, msg='Serialized JSON object does not match input')
 
-		expected = '{"string": "string-value","integer": 123,"float": 4.56,"bool": true,"null": null,"list": ["list-value",879,0.12,false,null]}'
+		with open('serialized-min.json', 'r') as serializedFile:
+			expected = serializedFile.read()
 
 		jsonstring = jsonparser.JsonParser.serializeJsonObject(jsonobj=json, noformat=True)
 		self.assertEqual(expected, jsonstring, msg='Serialized JSON object (no-format) does not match input')
