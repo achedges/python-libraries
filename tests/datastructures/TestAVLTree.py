@@ -1,8 +1,10 @@
 import unittest
-from localutils.datastructures.avltree import Tree
+from localutils.datastructures.avltree import TreeMap
 
 
-class Test(unittest.TestCase):
+class TreeMapTests(unittest.TestCase):
+
+	# how to add TreeSet tests?
 
 	@classmethod
 	def setUpClass(cls) -> None:
@@ -13,31 +15,29 @@ class Test(unittest.TestCase):
 		cls.forwardKeysPostOrder: list = [0, 2, 1, 4, 6, 5, 9, 8, 7, 3]
 		cls.reverseKeysPostOrder: list = [0, 1, 3, 5, 4, 2, 7, 9, 8, 6]
 
-		cls.forwardInsertTree: Tree = Tree()
-		for i in range(cls.listSize):
-			cls.forwardInsertTree.root = cls.forwardInsertTree.insert(cls.forwardInsertTree.root, i, i)
+		cls.ftree: TreeMap = TreeMap()
+		[ cls.ftree.add(i, i) for i in range(cls.listSize) ]
 
-		cls.reverseInsertTree: Tree = Tree()
-		for i in range(cls.listSize - 1, -1, -1):
-			cls.reverseInsertTree.root = cls.reverseInsertTree.insert(cls.reverseInsertTree.root, i, i)
+		cls.rtree: TreeMap = TreeMap()
+		[ cls.rtree.add(i, i) for i in range(cls.listSize - 1, -1, -1) ]
 
 
 	def testListSize(self):
-		self.assertEqual(self.forwardInsertTree.size, self.listSize, msg='Incorrect tree size (forward)')
-		self.assertEqual(self.reverseInsertTree.size, self.listSize, msg='Incorrect tree size (reverse)')
+		self.assertEqual(self.ftree.size, self.listSize, msg='Incorrect tree size (forward)')
+		self.assertEqual(self.rtree.size, self.listSize, msg='Incorrect tree size (reverse)')
 
 
 	def testMinMax(self):
-		self.assertEqual(self.forwardInsertTree.minimum().value, 0, msg='Incorrect tree minimum (forward)')
-		self.assertEqual(self.forwardInsertTree.maximum().value, 9, msg='Incorrect tree maximum (forward)')
+		self.assertEqual(self.ftree.minimum().value, 0, msg='Incorrect tree minimum (forward)')
+		self.assertEqual(self.ftree.maximum().value, 9, msg='Incorrect tree maximum (forward)')
 
-		self.assertEqual(self.reverseInsertTree.minimum().value, 0, msg='Incorrect tree minimum (reverse)')
-		self.assertEqual(self.reverseInsertTree.maximum().value, 9, msg='Incorrect tree maximum (reverse)')
+		self.assertEqual(self.rtree.minimum().value, 0, msg='Incorrect tree minimum (reverse)')
+		self.assertEqual(self.rtree.maximum().value, 9, msg='Incorrect tree maximum (reverse)')
 
 
 	def testNodeBoundaries(self):
-		ftree = self.forwardInsertTree
-		rtree = self.reverseInsertTree
+		ftree = self.ftree
+		rtree = self.rtree
 
 		self.assertIsNone(ftree.root.parent, msg='Invalid parent node on tree root (forward)')
 		self.assertIsNone(rtree.root.parent, msg='Invalid parent node on tree root (reverse)')
@@ -50,44 +50,44 @@ class Test(unittest.TestCase):
 
 
 	def testNextNodes(self):
-		cur = self.forwardInsertTree.minimum()
-		nex = self.forwardInsertTree.next(cur)
+		cur = self.ftree.minimum()
+		nex = self.ftree.next(cur)
 		while nex is not None:
 			exp = int(str(cur.key)) + 1
 			self.assertEqual(nex.key, exp, msg='Incorrect next key (forward)')
 			cur = nex
-			nex = self.forwardInsertTree.next(nex)
+			nex = self.ftree.next(nex)
 
-		cur = self.reverseInsertTree.minimum()
-		nex = self.reverseInsertTree.next(cur)
+		cur = self.rtree.minimum()
+		nex = self.rtree.next(cur)
 		while nex is not None:
 			exp = int(str(cur.key)) + 1
 			self.assertEqual(nex.key, exp, msg='Incorrect next key (reverse)')
 			cur = nex
-			nex = self.reverseInsertTree.next(nex)
+			nex = self.rtree.next(nex)
 
 
 	def testPreviousNodes(self):
-		cur = self.forwardInsertTree.maximum()
-		pre = self.forwardInsertTree.previous(cur)
+		cur = self.ftree.maximum()
+		pre = self.ftree.previous(cur)
 		while pre is not None:
 			exp = int(str(cur.key)) - 1
 			self.assertEqual(pre.key, exp, msg='Incorrect previous key (forward)')
 			cur = pre
-			pre = self.forwardInsertTree.previous(pre)
+			pre = self.ftree.previous(pre)
 
-		cur = self.reverseInsertTree.maximum()
-		pre = self.reverseInsertTree.previous(cur)
+		cur = self.rtree.maximum()
+		pre = self.rtree.previous(cur)
 		while pre is not None:
 			exp = int(str(cur.key)) - 1
 			self.assertEqual(pre.key, exp, msg='Incorrect previous key (reverse)')
 			cur = pre
-			pre = self.reverseInsertTree.previous(pre)
+			pre = self.rtree.previous(pre)
 
 
 	def testTraversal(self):
-		ftree = self.forwardInsertTree
-		rtree = self.reverseInsertTree
+		ftree = self.ftree
+		rtree = self.rtree
 
 		self.assertEqual(ftree.getKeys(traversal='inorder'), self.keysInOrder, msg='Incorrect in-order traversal (forward)')
 		self.assertEqual(rtree.getKeys(traversal='inorder'), self.keysInOrder, msg='Incorrect in-order traversal (reverse)')
@@ -101,7 +101,7 @@ class Test(unittest.TestCase):
 
 	def testFind(self):
 		for i in range(self.listSize):
-			fv = self.forwardInsertTree.find(i).value
-			rv = self.reverseInsertTree.find(i).value
+			fv = self.ftree.find(i).getValue()
+			rv = self.rtree.find(i).getValue()
 			self.assertEqual(fv, i, msg=f'Incorrect value found: {fv} (forward)')
 			self.assertEqual(rv, i, msg=f'Incorrect value found: {rv} (reverse)')
