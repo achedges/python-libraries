@@ -104,7 +104,7 @@ class TestAVL(unittest.TestCase):
 
 
 	def testFind(self):
-		for i in range(self.listSize):
+		for i in self.keys:
 			fv = self.ftree.find(i).getValue()
 			rv = self.rtree.find(i).getValue()
 			self.assertEqual(fv, i, msg=f'Incorrect value found: {fv} (forward)')
