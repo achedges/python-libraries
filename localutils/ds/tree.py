@@ -1,9 +1,62 @@
 from abc import ABC, abstractmethod
 from typing import Optional
-from datastructures.treenode import TreeNode, KeyValueNode, KeyNode
 
 
-class Tree(ABC):
+### Node classes ###
+
+class TreeNode(ABC):
+	def __init__(self, key: object):
+		self.height: int = 1
+		self.key: object = key
+		self.left: Optional[TreeNode] = None
+		self.right: Optional[TreeNode] = None
+		self.parent: Optional[TreeNode] = None
+
+	@abstractmethod
+	def getValue(self): pass
+
+	@abstractmethod
+	def copyTo(self, target): pass
+
+
+class KeyNode(TreeNode):
+	def __init__(self, key: object):
+		TreeNode.__init__(self, key)
+
+	def __str__(self):
+		return f'{self.key}'
+
+	def getValue(self):
+		return self.key
+
+	def copyTo(self, target):
+		target.key = self.key
+
+
+class KeyValueNode(TreeNode):
+	def __init__(self, key: object, value: object):
+		TreeNode.__init__(self, key)
+		self.value: object = value
+
+	def __str__(self):
+		return f'{self.key}: {self.value}'
+
+	def getValue(self):
+		return self.value
+
+	def copyTo(self, target):
+		target.key = self.key
+		target.value = self.value
+
+
+### AVL-Tree implementations ###
+
+class TreeBase(object):
+
+	def __new__(cls, *args, **kwargs):
+		if cls is TreeBase:
+			raise TypeError('TreeBase can not be instantiated directly.')
+		return object.__new__(cls)
 
 	def __init__(self):
 		self.size: int = 0
@@ -37,8 +90,6 @@ class Tree(ABC):
 
 	@classmethod
 	def _rotate(cls, oldroot: TreeNode, direction: str) -> TreeNode:
-
-		# the assignments to oldroot.left/right/height seem to be confusing PyCharm into thinking that the Tree itself has left/right/height
 
 		if direction not in ['left', 'right']:
 			raise Exception(f'Unknown tree rotation direction: {direction}')
@@ -242,19 +293,19 @@ class Tree(ABC):
 		return keys
 
 
-class TreeMap(Tree):
+class TreeMap(TreeBase):
 
 	def __init__(self):
-		Tree.__init__(self)
+		TreeBase.__init__(self)
 
 	def add(self, key: object, value: object):
 		self.root = self._insertNode(self.root, KeyValueNode(key, value))
 
 
-class TreeSet(Tree):
+class TreeSet(TreeBase):
 
 	def __init__(self):
-		Tree.__init__(self)
+		TreeBase.__init__(self)
 
 	def add(self, key: object):
 		self.root = self._insertNode(self.root, KeyNode(key))

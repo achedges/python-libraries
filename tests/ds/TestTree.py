@@ -1,25 +1,29 @@
 import unittest
-from localutils.datastructures.avltree import TreeMap
+from localutils.ds.tree import TreeMap, TreeSet
 
 
-class TreeMapTests(unittest.TestCase):
-
-	# how to add TreeSet tests?
+class TestAVL(unittest.TestCase):
 
 	@classmethod
 	def setUpClass(cls) -> None:
 		cls.listSize: int = 10
-		cls.keysInOrder: list = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+		cls.keys: list = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
 		cls.forwardKeysPreOrder: list = [3, 1, 0, 2, 7, 5, 4, 6, 8, 9]
 		cls.reverseKeysPreOrder: list = [6, 2, 1, 0, 4, 3, 5, 8, 7, 9]
 		cls.forwardKeysPostOrder: list = [0, 2, 1, 4, 6, 5, 9, 8, 7, 3]
 		cls.reverseKeysPostOrder: list = [0, 1, 3, 5, 4, 2, 7, 9, 8, 6]
 
 		cls.ftree: TreeMap = TreeMap()
-		[ cls.ftree.add(i, i) for i in range(cls.listSize) ]
+		[ cls.ftree.add(i, i) for i in cls.keys ]
 
 		cls.rtree: TreeMap = TreeMap()
-		[ cls.rtree.add(i, i) for i in range(cls.listSize - 1, -1, -1) ]
+		[ cls.rtree.add(i, i) for i in cls.keys[::-1] ]
+
+		cls.fset: TreeSet = TreeSet()
+		[ cls.fset.add(i) for i in cls.keys ]
+
+		cls.rset: TreeSet = TreeSet()
+		[ cls.rset.add(i) for i in cls.keys[::-1] ]
 
 
 	def testListSize(self):
@@ -89,8 +93,8 @@ class TreeMapTests(unittest.TestCase):
 		ftree = self.ftree
 		rtree = self.rtree
 
-		self.assertEqual(ftree.getKeys(traversal='inorder'), self.keysInOrder, msg='Incorrect in-order traversal (forward)')
-		self.assertEqual(rtree.getKeys(traversal='inorder'), self.keysInOrder, msg='Incorrect in-order traversal (reverse)')
+		self.assertEqual(ftree.getKeys(traversal='inorder'), self.keys, msg='Incorrect in-order traversal (forward)')
+		self.assertEqual(rtree.getKeys(traversal='inorder'), self.keys, msg='Incorrect in-order traversal (reverse)')
 
 		self.assertEqual(ftree.getKeys(traversal='preorder'), self.forwardKeysPreOrder, msg='Incorrect pre-order traversal (forward)')
 		self.assertEqual(rtree.getKeys(traversal='preorder'), self.reverseKeysPreOrder, msg='Incorrect pre-order traversal (reverse)')
