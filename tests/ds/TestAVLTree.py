@@ -1,5 +1,5 @@
 import unittest
-from localutils.ds.tree import TreeMap, TreeSet, TreeBase
+from localutils.ds.tree import TreeMap, TreeSet, TreeBase, KeyValueNode
 
 
 class AVLTestBase(unittest.TestCase):
@@ -83,6 +83,12 @@ class TestTreeMapInOrder(AVLTestBase):
 	def testFind(self):
 		self.findTestHelper(self.tree)
 
+	def testMapNodeUpdate(self):
+		self.tree.add(5, 15)
+		self.assertEqual(self.tree.find(5).getValue(), 15, msg='Incorrect node value after update')
+		self.traversalTestHelper(self.tree, self.preOrderKeys, self.postOrderKeys)
+		self.tree.add(5, 5) # reset value
+
 
 ### TreeMap tests, node insertion reversed ###
 
@@ -118,6 +124,12 @@ class TestTreeMapReversed(AVLTestBase):
 
 	def testFind(self):
 		self.findTestHelper(self.tree)
+
+	def testMapNodeUpdate(self):
+		self.tree.add(5, 15)
+		self.assertEqual(self.tree.find(5).getValue(), 15, msg='Incorrect node value after update')
+		self.traversalTestHelper(self.tree, self.preOrderKeys, self.postOrderKeys)
+		self.tree.add(5, 5) # reset value
 
 
 ### TreeSet tests, node insertion in-order ###

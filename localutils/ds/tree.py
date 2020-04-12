@@ -13,7 +13,7 @@ class TreeNode(ABC):
 		self.parent: Optional[TreeNode] = None
 
 	@abstractmethod
-	def getValue(self): pass
+	def getValue(self) -> object: pass
 
 	@abstractmethod
 	def copyTo(self, target): pass
@@ -26,7 +26,7 @@ class KeyNode(TreeNode):
 	def __str__(self):
 		return f'{self.key}'
 
-	def getValue(self):
+	def getValue(self) -> object:
 		return self.key
 
 	def copyTo(self, target):
@@ -41,7 +41,7 @@ class KeyValueNode(TreeNode):
 	def __str__(self):
 		return f'{self.key}: {self.value}'
 
-	def getValue(self):
+	def getValue(self) -> object:
 		return self.value
 
 	def copyTo(self, target):
@@ -220,7 +220,7 @@ class TreeBase(object):
 		elif node.key > root.key:
 			root.right = self._insertNode(root.right, node)
 		else:
-			return root
+			node.copyTo(root) # replace if key found
 
 		return self._balanceSubtree(root, node.key)
 
