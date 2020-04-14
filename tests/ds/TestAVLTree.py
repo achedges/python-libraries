@@ -22,6 +22,7 @@ class AVLTestBase(unittest.TestCase):
 	def nextNodesTestHelper(self, tree: TreeBase):
 		cur = tree.minimum()
 		nex = tree.next(cur)
+		self.assertIsNotNone(nex, msg='Initial next node is None')
 		while nex is not None:
 			exp = int(str(cur.key)) + 1
 			self.assertEqual(nex.key, exp, msg='Incorrect next key')
@@ -31,6 +32,7 @@ class AVLTestBase(unittest.TestCase):
 	def previousNodesTestHelper(self, tree: TreeBase):
 		cur = tree.maximum()
 		pre = tree.previous(cur)
+		self.assertIsNotNone(pre, msg='Initial previous node is None')
 		while pre is not None:
 			exp = int(str(cur.key)) - 1
 			self.assertEqual(pre.key, exp, msg='Incorrect previous key')
@@ -103,6 +105,49 @@ class TestTreeMapReversed(AVLTestBase):
 
 		for i in cls.keys[::-1]:
 			cls.tree.add(i, i)
+
+	def testListSize(self):
+		self.listSizeTestHelper(self.tree)
+
+	def testMinMax(self):
+		self.minMaxTestHelper(self.tree, 0, self.listSize - 1)
+
+	def testNodeBoundaries(self):
+		self.nodeBoundariesTestHelper(self.tree)
+
+	def testNextNodes(self):
+		self.nextNodesTestHelper(self.tree)
+
+	def testPreviousNodes(self):
+		self.previousNodesTestHelper(self.tree)
+
+	def testTraversal(self):
+		self.traversalTestHelper(self.tree, self.preOrderKeys, self.postOrderKeys)
+
+	def testFind(self):
+		self.findTestHelper(self.tree)
+
+	def testMapNodeUpdate(self):
+		self.tree.add(5, 15)
+		self.assertEqual(self.tree.find(5).getValue(), 15, msg='Incorrect node value after update')
+		self.traversalTestHelper(self.tree, self.preOrderKeys, self.postOrderKeys)
+		self.tree.add(5, 5) # reset value
+
+
+### TreeMap tests, node insertion scrambled
+
+class TestTreeMapScrambled(AVLTestBase):
+
+	@classmethod
+	def setUpClass(cls) -> None:
+		AVLTestBase.setUpClass()
+		cls.preOrderKeys: list = [ 4, 1, 0, 2, 3, 6, 5, 8, 7, 9 ]
+		cls.postOrderKeys: list = [ 0, 3, 2, 1, 5, 7, 9, 8, 6, 4 ]
+		cls.tree: TreeMap = TreeMap()
+
+		insertionOrder: list = [ 0, 2, 1, 6, 4, 5, 3, 9, 7, 8 ]
+		for i in insertionOrder:
+			cls.tree.add(cls.keys[i], cls.keys[i])
 
 	def testListSize(self):
 		self.listSizeTestHelper(self.tree)

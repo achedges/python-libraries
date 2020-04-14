@@ -89,41 +89,6 @@ class TreeBase(object):
 		return node
 
 	@classmethod
-	def _rotate(cls, oldroot: TreeNode, direction: str) -> TreeNode:
-
-		if direction not in ['left', 'right']:
-			raise Exception(f'Unknown tree rotation direction: {direction}')
-
-		newroot: TreeNode
-		tmp: TreeNode
-
-		if direction == 'right':
-			newroot = oldroot.left
-			tmp = newroot.right
-			newroot.right = oldroot
-			oldroot.left = tmp
-
-		else:
-			newroot = oldroot.right
-			tmp = newroot.left
-			newroot.left = oldroot
-			oldroot.right = tmp
-
-		oldroot.height = cls._getMaxSubtreeHeight(oldroot) + 1
-		newroot.height = cls._getMaxSubtreeHeight(newroot) + 1
-
-		cls._setParentNodes(newroot.parent)
-
-		return newroot
-
-	@classmethod
-	def _setParentNodes(cls, node: TreeNode):
-		if node is None: return
-		if node.left is not None: node.left.parent = node
-		if node.right is not None: node.right.parent = node
-		return
-
-	@classmethod
 	def _walkKeys(cls, node: TreeNode, elements: list, order: str= 'inorder') -> None:
 		if order == 'inorder':
 			if node.left is not None:
@@ -187,6 +152,34 @@ class TreeBase(object):
 
 		return self._getMax(self.root)
 
+	@classmethod
+	def _rotate(cls, curroot: TreeNode, direction: str) -> TreeNode:
+
+		if direction not in ['left', 'right']:
+			raise Exception(f'Unknown tree rotation direction: {direction}')
+
+		newroot: TreeNode
+		tmp: TreeNode
+
+		if direction == 'right':
+			newroot = curroot.left
+			tmp = newroot.right
+			newroot.right = curroot
+			curroot.left = tmp
+			if tmp is not None: tmp.parent = curroot
+
+		else:
+			newroot = curroot.right
+			tmp = newroot.left
+			newroot.left = curroot
+			curroot.right = tmp
+			if tmp is not None:	tmp.parent = curroot
+
+		curroot.height = cls._getMaxSubtreeHeight(curroot) + 1
+		newroot.height = cls._getMaxSubtreeHeight(newroot) + 1
+
+		return newroot
+
 	def _balanceSubtree(self, root: TreeNode, key: object) -> TreeNode:
 		root.height = self._getMaxSubtreeHeight(root) + 1
 		balance = self._getSubtreeBalance(root)
@@ -205,7 +198,8 @@ class TreeBase(object):
 			root.right = self._rotate(root.right, 'right')
 			root = self._rotate(root, 'left')
 
-		root.parent = None
+		if root.left is not None: root.left.parent = root
+		if root.right is not None: root.right.parent = root
 
 		return root
 
@@ -217,8 +211,10 @@ class TreeBase(object):
 
 		if node.key < root.key:
 			root.left = self._insertNode(root.left, node)
+			root.left.parent = root
 		elif node.key > root.key:
 			root.right = self._insertNode(root.right, node)
+			root.right.parent = root
 		else:
 			node.copyTo(root) # replace if key found
 
@@ -300,6 +296,7 @@ class TreeMap(TreeBase):
 
 	def add(self, key: object, value: object):
 		self.root = self._insertNode(self.root, KeyValueNode(key, value))
+		self.root.parent = None
 
 
 class TreeSet(TreeBase):
@@ -309,3 +306,4 @@ class TreeSet(TreeBase):
 
 	def add(self, key: object):
 		self.root = self._insertNode(self.root, KeyNode(key))
+		self.root.parent = None
