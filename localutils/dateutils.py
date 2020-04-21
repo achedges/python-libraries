@@ -1,9 +1,18 @@
 import datetime
+import pytz
 from localutils import stringutils
 
 
 def generateDate(year, month, date):
 	return datetime.date(year, month, date)
+
+
+def generateDateTime(year: int, month: int, date: int, hour: int, minute: int, second: int, timezone: str='') -> datetime.datetime:
+	dt = datetime.datetime(year, month, date, hour, minute, second)
+	if timezone != '':
+		tz = pytz.timezone(timezone)
+		dt = tz.localize(dt)
+	return dt
 
 
 def getMinDate():
@@ -14,8 +23,12 @@ def getDate(offset=0):
 	return datetime.datetime.now().date() + datetime.timedelta(days=offset)
 
 
-def getCurrentDateTime():
-	return datetime.datetime.now()
+def getCurrentDateTime(zone: str=''):
+	dt = datetime.datetime.now()
+	if zone != '':
+		tz = pytz.timezone(zone)
+		dt = tz.localize(dt)
+	return dt
 
 
 def getDateTimeFromTimestamp(timestamp):
