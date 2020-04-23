@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Optional
+from typing import Optional, List, Dict
 
 
 ### Node classes ###
@@ -278,12 +278,35 @@ class TreeBase(object):
 	def contains(self, key: object) -> bool:
 		return self.find(key) is not None
 
-	def getKeys(self, traversal: str='inorder') -> list:
-		if traversal not in ['inorder','preorder','postorder']:
+	@staticmethod
+	def _bfs(node: Optional[TreeNode], depthmap: Dict[object, List[object]], depth: int) -> None:
+		if node is None:
+			return
+
+		if depth not in depthmap:
+			depthmap[depth] = []
+
+		depthmap[depth].append(node.key)
+		TreeBase._bfs(node.left, depthmap, depth + 1)
+		TreeBase._bfs(node.right, depthmap, depth + 1)
+
+		return
+
+	def getKeys(self, traversal: str='inorder') -> List[object]:
+		if traversal not in ['inorder','preorder','postorder','breadthfirst']:
 			raise Exception(f'Invalid tree traversal order: {traversal}')
 
-		keys = []
-		if self.root is not None:
+		keys: List[object] = []
+		if self.root is None:
+			return keys
+
+		if traversal == 'breadthfirst':
+			_map: Dict[object, List[object]] = {}
+			TreeBase._bfs(self.root, _map, 0)
+			for k in sorted(_map.keys()):
+				keys += _map[k]
+
+		else:
 			self._walkKeys(self.root, keys, traversal)
 
 		return keys

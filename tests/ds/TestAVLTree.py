@@ -39,10 +39,11 @@ class AVLTestBase(unittest.TestCase):
 			cur = pre
 			pre = tree.previous(pre)
 
-	def traversalTestHelper(self, tree: TreeBase, preOrderKeys: list, postOrderKeys: list):
+	def traversalTestHelper(self, tree: TreeBase, preOrderKeys: list, postOrderKeys: list, bfsKeys: list):
 		self.assertEqual(tree.getKeys(traversal='inorder'), self.keys, msg='Incorrect in-order traversal')
 		self.assertEqual(tree.getKeys(traversal='preorder'), preOrderKeys, msg='Incorrect pre-order traversal')
 		self.assertEqual(tree.getKeys(traversal='postorder'), postOrderKeys, msg='Incorrect post-order traversal')
+		self.assertEqual(tree.getKeys(traversal='breadthfirst'), bfsKeys, msg='Incorrect breadth-first traversal')
 
 	def findTestHelper(self, tree: TreeBase):
 		for i in self.keys:
@@ -59,6 +60,7 @@ class TestTreeMapInOrder(AVLTestBase):
 		AVLTestBase.setUpClass()
 		cls.preOrderKeys: list = [ 3, 1, 0, 2, 7, 5, 4, 6, 8, 9 ]
 		cls.postOrderKeys: list = [ 0, 2, 1, 4, 6, 5, 9, 8, 7, 3 ]
+		cls.bfsKeys: list = [ 3, 1, 7, 0, 2, 5, 8, 4, 6, 9 ]
 		cls.tree: TreeMap = TreeMap()
 
 		for i in cls.keys:
@@ -80,7 +82,7 @@ class TestTreeMapInOrder(AVLTestBase):
 		self.previousNodesTestHelper(self.tree)
 
 	def testTraversal(self):
-		self.traversalTestHelper(self.tree, self.preOrderKeys, self.postOrderKeys)
+		self.traversalTestHelper(self.tree, self.preOrderKeys, self.postOrderKeys, self.bfsKeys)
 
 	def testFind(self):
 		self.findTestHelper(self.tree)
@@ -88,7 +90,7 @@ class TestTreeMapInOrder(AVLTestBase):
 	def testMapNodeUpdate(self):
 		self.tree.add(5, 15)
 		self.assertEqual(self.tree.find(5).getValue(), 15, msg='Incorrect node value after update')
-		self.traversalTestHelper(self.tree, self.preOrderKeys, self.postOrderKeys)
+		self.traversalTestHelper(self.tree, self.preOrderKeys, self.postOrderKeys, self.bfsKeys)
 		self.tree.add(5, 5) # reset value
 
 
@@ -101,6 +103,7 @@ class TestTreeMapReversed(AVLTestBase):
 		AVLTestBase.setUpClass()
 		cls.preOrderKeys: list = [ 6, 2, 1, 0, 4, 3, 5, 8, 7, 9 ]
 		cls.postOrderKeys: list = [ 0, 1, 3, 5, 4, 2, 7, 9, 8, 6 ]
+		cls.bfsKeys: list = [ 6, 2, 8, 1, 4, 7, 9, 0, 3, 5 ]
 		cls.tree: TreeMap = TreeMap()
 
 		for i in cls.keys[::-1]:
@@ -122,7 +125,7 @@ class TestTreeMapReversed(AVLTestBase):
 		self.previousNodesTestHelper(self.tree)
 
 	def testTraversal(self):
-		self.traversalTestHelper(self.tree, self.preOrderKeys, self.postOrderKeys)
+		self.traversalTestHelper(self.tree, self.preOrderKeys, self.postOrderKeys, self.bfsKeys)
 
 	def testFind(self):
 		self.findTestHelper(self.tree)
@@ -130,7 +133,7 @@ class TestTreeMapReversed(AVLTestBase):
 	def testMapNodeUpdate(self):
 		self.tree.add(5, 15)
 		self.assertEqual(self.tree.find(5).getValue(), 15, msg='Incorrect node value after update')
-		self.traversalTestHelper(self.tree, self.preOrderKeys, self.postOrderKeys)
+		self.traversalTestHelper(self.tree, self.preOrderKeys, self.postOrderKeys, self.bfsKeys)
 		self.tree.add(5, 5) # reset value
 
 
@@ -143,6 +146,7 @@ class TestTreeMapScrambled(AVLTestBase):
 		AVLTestBase.setUpClass()
 		cls.preOrderKeys: list = [ 4, 1, 0, 2, 3, 6, 5, 8, 7, 9 ]
 		cls.postOrderKeys: list = [ 0, 3, 2, 1, 5, 7, 9, 8, 6, 4 ]
+		cls.bfsKeys: list = [ 4, 1, 6, 0, 2, 5, 8, 3, 7, 9 ]
 		cls.tree: TreeMap = TreeMap()
 
 		insertionOrder: list = [ 0, 2, 1, 6, 4, 5, 3, 9, 7, 8 ]
@@ -165,7 +169,7 @@ class TestTreeMapScrambled(AVLTestBase):
 		self.previousNodesTestHelper(self.tree)
 
 	def testTraversal(self):
-		self.traversalTestHelper(self.tree, self.preOrderKeys, self.postOrderKeys)
+		self.traversalTestHelper(self.tree, self.preOrderKeys, self.postOrderKeys, self.bfsKeys)
 
 	def testFind(self):
 		self.findTestHelper(self.tree)
@@ -173,7 +177,7 @@ class TestTreeMapScrambled(AVLTestBase):
 	def testMapNodeUpdate(self):
 		self.tree.add(5, 15)
 		self.assertEqual(self.tree.find(5).getValue(), 15, msg='Incorrect node value after update')
-		self.traversalTestHelper(self.tree, self.preOrderKeys, self.postOrderKeys)
+		self.traversalTestHelper(self.tree, self.preOrderKeys, self.postOrderKeys, self.bfsKeys)
 		self.tree.add(5, 5) # reset value
 
 
@@ -186,6 +190,7 @@ class TestTreeSetInOrder(AVLTestBase):
 		AVLTestBase.setUpClass()
 		cls.preOrderKeys: list = [ 3, 1, 0, 2, 7, 5, 4, 6, 8, 9 ]
 		cls.postOrderKeys: list = [ 0, 2, 1, 4, 6, 5, 9, 8, 7, 3 ]
+		cls.bfsKeys: list = [ 3, 1, 7, 0, 2, 5, 8, 4, 6, 9 ]
 		cls.tree: TreeSet = TreeSet()
 
 		for i in cls.keys:
@@ -207,7 +212,7 @@ class TestTreeSetInOrder(AVLTestBase):
 		self.previousNodesTestHelper(self.tree)
 
 	def testTraversal(self):
-		self.traversalTestHelper(self.tree, self.preOrderKeys, self.postOrderKeys)
+		self.traversalTestHelper(self.tree, self.preOrderKeys, self.postOrderKeys, self.bfsKeys)
 
 	def testFind(self):
 		self.findTestHelper(self.tree)
@@ -222,6 +227,7 @@ class TestTreeSetReversed(AVLTestBase):
 		AVLTestBase.setUpClass()
 		cls.preOrderKeys: list = [ 6, 2, 1, 0, 4, 3, 5, 8, 7, 9 ]
 		cls.postOrderKeys: list = [ 0, 1, 3, 5, 4, 2, 7, 9, 8, 6 ]
+		cls.bfsKeys: list = [ 6, 2, 8, 1, 4, 7, 9, 0, 3, 5 ]
 		cls.tree: TreeSet = TreeSet()
 
 		for i in cls.keys[::-1]:
@@ -243,7 +249,7 @@ class TestTreeSetReversed(AVLTestBase):
 		self.previousNodesTestHelper(self.tree)
 
 	def testTraversal(self):
-		self.traversalTestHelper(self.tree, self.preOrderKeys, self.postOrderKeys)
+		self.traversalTestHelper(self.tree, self.preOrderKeys, self.postOrderKeys, self.bfsKeys)
 
 	def testFind(self):
 		self.findTestHelper(self.tree)
