@@ -179,29 +179,6 @@ class TreeBase(object):
 
 		return newroot
 
-	def _balanceSubtree(self, root: TreeNode, key: object) -> TreeNode:
-		root.height = self._getMaxSubtreeHeight(root) + 1
-		balance = self._getSubtreeBalance(root)
-
-		if balance > 1 and key < root.left.key:
-			root = self._rotate(root, 'right')
-
-		elif balance < -1 and key > root.right.key:
-			root = self._rotate(root, 'left')
-
-		elif balance > 1 and key > root.left.key:
-			root.left = self._rotate(root.left, 'left')
-			root = self._rotate(root, 'right')
-
-		elif balance < -1 and key < root.right.key:
-			root.right = self._rotate(root.right, 'right')
-			root = self._rotate(root, 'left')
-
-		if root.left is not None: root.left.parent = root
-		if root.right is not None: root.right.parent = root
-
-		return root
-
 	def _insertNode(self, root: TreeNode, node: TreeNode) -> TreeNode:
 		if root is None:
 			root = node
@@ -217,7 +194,30 @@ class TreeBase(object):
 		else:
 			node.copyTo(root) # replace if key found
 
-		return self._balanceSubtree(root, node.key)
+		lheight = root.left.height if root.left is not None else 0
+		rheight = root.right.height if root.right is not None else 0
+		root.height = 1 + (lheight if lheight > rheight else rheight)
+
+		balance = (root.left.height if root.left is not None else 0) - (root.right.height if root.right is not None else 0)
+
+		if balance > 1 and node.key < root.left.key:
+			root = self._rotate(root, 'right')
+
+		elif balance < -1 and node.key > root.right.key:
+			root = self._rotate(root, 'left')
+
+		elif balance > 1 and node.key > root.left.key:
+			root.left = self._rotate(root.left, 'left')
+			root = self._rotate(root, 'right')
+
+		elif balance < -1 and node.key < root.right.key:
+			root.right = self._rotate(root.right, 'right')
+			root = self._rotate(root, 'left')
+
+		if root.left is not None: root.left.parent = root
+		if root.right is not None: root.right.parent = root
+
+		return root
 
 	def _deleteNode(self, root: TreeNode, key: object) -> Optional[TreeNode]:
 		if root is None:
