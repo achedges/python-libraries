@@ -63,10 +63,6 @@ class TreeBase(object):
 		self.root: Optional[TreeNode] = None
 
 	@classmethod
-	def _getSubtreeHeight(cls, node: TreeNode) -> int:
-		return node.height if node is not None else 0
-
-	@classmethod
 	def _getMaxSubtreeHeight(cls, node: TreeNode) -> int:
 		l = node.left.height if node.left is not None else 0
 		r = node.right.height if node.right is not None else 0
@@ -74,7 +70,10 @@ class TreeBase(object):
 
 	@classmethod
 	def _getSubtreeBalance(cls, node: TreeNode) -> int:
-		return cls._getSubtreeHeight(node.left) - cls._getSubtreeHeight(node.right) if node is not None else 0
+		if node is None:
+			return 0
+		else:
+			return (node.left.height if node.left is not None else 0) - (node.right.height if node.right is not None else 0)
 
 	@classmethod
 	def _getMin(cls, node: TreeNode) -> TreeNode:
