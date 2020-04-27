@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from collections import deque
 from typing import Optional, List, Dict
 
 
@@ -61,6 +62,8 @@ class TreeBase(object):
 	def __init__(self):
 		self.size: int = 0
 		self.root: Optional[TreeNode] = None
+		self.insertstack: deque = deque()
+		self.insertstacklen: int = 0
 
 	@classmethod
 	def _getMaxSubtreeHeight(cls, node: TreeNode) -> int:
@@ -180,42 +183,57 @@ class TreeBase(object):
 		return newroot
 
 	def _insertNode(self, root: TreeNode, node: TreeNode) -> TreeNode:
+		while root is not None:
+			if node.key == root.key:
+				node.copyTo(root)
+				break
+
+			else:
+				self.insertstack.append(root)
+				self.insertstacklen += 1
+				if node.key < root.key:
+					root = root.left
+				elif node.key > root.key:
+					root = root.right
+
 		if root is None:
 			root = node
 			self.size += 1
-			return root
 
-		if node.key < root.key:
-			root.left = self._insertNode(root.left, node)
-			root.left.parent = root
-		elif node.key > root.key:
-			root.right = self._insertNode(root.right, node)
-			root.right.parent = root
-		else:
-			node.copyTo(root) # replace if key found
+		while self.insertstacklen > 0:
+			parent = self.insertstack.pop()
+			self.insertstacklen -= 1
 
-		lheight = root.left.height if root.left is not None else 0
-		rheight = root.right.height if root.right is not None else 0
-		root.height = 1 + (lheight if lheight > rheight else rheight)
+			root.parent = parent
+			if root.key < parent.key:
+				parent.left = root
+			else:
+				parent.right = root
 
-		balance = (root.left.height if root.left is not None else 0) - (root.right.height if root.right is not None else 0)
+			lheight = parent.left.height if parent.left is not None else 0
+			rheight = parent.right.height if parent.right is not None else 0
+			parent.height = 1 + (lheight if lheight > rheight else rheight)
 
-		if balance > 1 and node.key < root.left.key:
-			root = self._rotate(root, 'right')
+			balance = (parent.left.height if parent.left is not None else 0) - (parent.right.height if parent.right is not None else 0)
 
-		elif balance < -1 and node.key > root.right.key:
-			root = self._rotate(root, 'left')
+			if balance > 1 and node.key < parent.left.key:
+				parent = self._rotate(parent, 'right')
 
-		elif balance > 1 and node.key > root.left.key:
-			root.left = self._rotate(root.left, 'left')
-			root = self._rotate(root, 'right')
+			elif balance < -1 and node.key > parent.right.key:
+				parent = self._rotate(parent, 'left')
 
-		elif balance < -1 and node.key < root.right.key:
-			root.right = self._rotate(root.right, 'right')
-			root = self._rotate(root, 'left')
+			elif balance > 1 and node.key > parent.left.key:
+				parent.left = self._rotate(parent.left, 'left')
+				parent = self._rotate(parent, 'right')
 
-		if root.left is not None: root.left.parent = root
-		if root.right is not None: root.right.parent = root
+			elif balance < -1 and node.key < parent.right.key:
+				parent.right = self._rotate(parent.right, 'right')
+				parent = self._rotate(parent, 'left')
+
+			if parent.left is not None: parent.left.parent = parent
+			if parent.right is not None: parent.right.parent = parent
+
+			root = parent
 
 		return root
 
