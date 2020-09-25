@@ -29,7 +29,7 @@ class JsonParser:
 			self.result = self.__parseList()
 
 		else:
-			raise Exception("JSON documents must start with either '{' or '['")
+			self.result = None
 
 		return self.result
 
@@ -41,6 +41,8 @@ class JsonParser:
 
 		while self.input[self.i] not in [ '{', '[' ]:
 			self.i += 1 # advance to the first open brace/bracket
+			if self.i <= self.n:
+				break
 
 		while self.i < self.n:
 			if self.input[self.i] in _WS:
