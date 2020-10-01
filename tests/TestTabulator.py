@@ -7,17 +7,21 @@ class Test(unittest.TestCase):
 
 	def testTableOutput(self):
 		tabulator: Tabulator = Tabulator()
-		tabulator.addColumnDefinition(ColumnDefinition('Col1'))
-		tabulator.addColumnDefinition(ColumnDefinition('Col2', FormatSpecifier.CommaSeparated))
-		tabulator.addColumnDefinition(ColumnDefinition('Col3', FormatSpecifier.Currency))
+		tabulator.addColumnDefinition(ColumnDefinition('Symbol'))
+		tabulator.addColumnDefinition(ColumnDefinition('Date'))
+		tabulator.addColumnDefinition(ColumnDefinition('Volume', FormatSpecifier.CommaSeparated))
+		tabulator.addColumnDefinition(ColumnDefinition('Avg Price', FormatSpecifier.Currency))
 
 		records: List[list] = [
-			[ 'Record 1', 1234567, 1234.1234 ],
-			[ 'Record 2', 987654321, 10.1423 ]
+			[ 'ASDF', '20200930', 1234567, 1234.1234 ],
+			[ 'QWER', '20200930', 987654321, 10.1423 ],
+			[ 'ASDF', '20201001', 3142536, 1211.89 ],
+			[ 'QWER', '20201001', 786466378, 11 ]
 		]
 
-		output: str = tabulator.toTable(records)
-		expected: str = 'Col1        Col2           Col3         \n----------------------------------------\nRecord 1    1,234,567      $1,234.12    \nRecord 2    987,654,321    $10.14       \n'
+		output: str = tabulator.toTable(records, segmentColumnIndex=1)
+		with open('table-results.txt') as t:
+			expected: str = t.read()
 
 		self.assertEqual(output, expected)
 

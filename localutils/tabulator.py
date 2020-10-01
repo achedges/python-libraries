@@ -32,8 +32,18 @@ class Tabulator:
 
 	def addColumnDefinition(self, definition: ColumnDefinition):
 		self.columnDefinitions.append(definition)
+		
+	def getTableHeader(self):
+		header: str = ''
+		header += ''.join([ c.name.ljust(c.length + c.padsize) for c in self.columnDefinitions ]) + '\n'
+		header += ''.join([ '-'.ljust(c.length + c.padsize, '-') for c in self.columnDefinitions ]) + '\n'
+		return header
 
-	def toTable(self, records: List[list]) -> str:
+	def toTable(self, records: List[list], segmentColumnIndex: int = None) -> str:
+		# validate the segment column index, if provided
+		if segmentColumnIndex is not None and (segmentColumnIndex < 0 or segmentColumnIndex > len(self.columnDefinitions)):
+			segmentColumnIndex = None			
+		
 		_records: List[list] = []
 		for record in records:
 			fields: List[str] = [ self.columnDefinitions[i].getField(record[i]) for i in range(len(record)) ]
@@ -43,14 +53,20 @@ class Tabulator:
 
 			_records.append(fields)
 
-		output: str = ''
-		output += ''.join([ c.name.ljust(c.length + c.padsize) for c in self.columnDefinitions ]) + '\n'
-		output += ''.join([ '-'.ljust(c.length + c.padsize, '-') for c in self.columnDefinitions ]) + '\n'
+		output: str = self.getTableHeader() # initialize output with table header
 
 		if len(_records) == 0:
 			output += 'No records found\n'
+		
+		segmentValue: str = ''
+		if segmentColumnIndex is not None:
+			segmentValue = _records[0][segmentColumnIndex]
 
 		for record in _records:
+			if segmentColumnIndex is not None and record[segmentColumnIndex] != segmentValue:
+				output += self.getTableHeader()
+				segmentValue = record[segmentColumnIndex]
+				
 			output += ''.join([ record[i].ljust(self.columnDefinitions[i].length + self.columnDefinitions[i].padsize) for i in range(len(self.columnDefinitions)) ]) + '\n'
 
 		return output
