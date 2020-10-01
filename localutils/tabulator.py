@@ -34,7 +34,7 @@ class Tabulator:
 		self.columnDefinitions.append(definition)
 		
 	def getTableHeader(self):
-		header: str = ''
+		header: str = '\n'
 		header += ''.join([ c.name.ljust(c.length + c.padsize) for c in self.columnDefinitions ]) + '\n'
 		header += ''.join([ '-'.ljust(c.length + c.padsize, '-') for c in self.columnDefinitions ]) + '\n'
 		return header
@@ -68,5 +68,7 @@ class Tabulator:
 				segmentValue = record[segmentColumnIndex]
 				
 			output += ''.join([ record[i].ljust(self.columnDefinitions[i].length + self.columnDefinitions[i].padsize) for i in range(len(self.columnDefinitions)) ]) + '\n'
+			
+		output += '\n'
 
 		return output
