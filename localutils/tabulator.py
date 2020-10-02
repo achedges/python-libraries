@@ -4,7 +4,8 @@ from typing import List, Union
 
 class FormatSpecifier(Enum):
 	CommaSeparated = 'CommaSeparated',
-	Currency = 'Currency'
+	Currency = 'Currency',
+	Percentage = 'Percentage'
 
 class ColumnDefinition:
 	def __init__(self, name: str, columnFormat: Union[FormatSpecifier, str]='', padsize: int=4):
@@ -21,6 +22,8 @@ class ColumnDefinition:
 			return f'{value:,}'
 		elif self.columnFormat == FormatSpecifier.Currency:
 			return f'${value:,.2f}'
+		elif self.columnFormat == FormatSpecifier.Percentage:
+			return f'{value * 100:.2f}%'
 		elif self.columnFormat != '':
 			return f'{value:{self.columnFormat}}'
 
