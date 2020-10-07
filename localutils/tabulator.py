@@ -59,7 +59,7 @@ class Tabulator:
 		output: str = self.getTableHeader() # initialize output with table header
 
 		if len(_records) == 0:
-			output += 'No records found\n'
+			output += 'No records found'
 		
 		segmentValue: str = ''
 		if segmentColumnIndex is not None:
