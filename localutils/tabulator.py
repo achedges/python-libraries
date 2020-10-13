@@ -59,7 +59,7 @@ class Tabulator:
 		output: str = self.getTableHeader() # initialize output with table header
 
 		if len(_records) == 0:
-			output += 'No records found'
+			output += 'No records found\n'
 		
 		segmentValue: str = ''
 		if segmentColumnIndex is not None:
@@ -71,7 +71,6 @@ class Tabulator:
 				segmentValue = record[segmentColumnIndex]
 				
 			output += ''.join([ record[i].ljust(self.columnDefinitions[i].length + self.columnDefinitions[i].padsize) for i in range(len(self.columnDefinitions)) ]) + '\n'
-			
-		output += '\n'
 
 		return output
+
