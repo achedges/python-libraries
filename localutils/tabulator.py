@@ -70,7 +70,9 @@ class Tabulator:
 				output += self.getTableHeader()
 				segmentValue = record[segmentColumnIndex]
 				
-			output += ''.join([ record[i].ljust(self.columnDefinitions[i].length + self.columnDefinitions[i].padsize) for i in range(len(self.columnDefinitions)) ]) + '\n'
+			output += self.toRow(record)
 
 		return output
-
+	
+	def toRow(self, record: List[str]) -> str:
+		return ''.join([ record[i].ljust(self.columnDefinitions[i].length + self.columnDefinitions[i].padsize) for i in range(len(self.columnDefinitions)) ]) + '\n'
