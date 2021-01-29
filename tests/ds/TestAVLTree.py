@@ -1,5 +1,5 @@
 import unittest
-from localutils.ds.tree import TreeMap, TreeSet, TreeBase, KeyValueNode
+from localutils.ds.tree import TreeMap, TreeSet, TreeBase
 
 
 class AVLTestBase(unittest.TestCase):
