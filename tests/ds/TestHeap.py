@@ -1,17 +1,17 @@
 import unittest
-from localutils.ds.heap import MaxHeap, MinHeap
+from localutils.ds.heap import Heap, HeapType
 from typing import List, Optional
 
 
 class TestHeap(unittest.TestCase):
 	
 	testValues: List[int] = [ 4, 1, 6, 7, 2, 3, 9, 8, 5, 0 ]
-	minHeap: MinHeap = None
-	maxHeap: MaxHeap = None
+	minHeap: Heap = None
+	maxHeap: Heap = None
 	
 	def setUp(self) -> None:
-		self.minHeap = MinHeap()
-		self.maxHeap = MaxHeap()
+		self.minHeap = Heap(heaptype=HeapType.MinHeap)
+		self.maxHeap = Heap(heaptype=HeapType.MaxHeap)
 		for i in self.testValues:
 			self.minHeap.push(i)
 			self.maxHeap.push(i)

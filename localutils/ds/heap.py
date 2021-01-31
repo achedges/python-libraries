@@ -1,12 +1,22 @@
-from abc import ABC, abstractmethod
-from typing import List, Optional
+from enum import Enum
+from typing import Callable, List, Optional
 
 
-class Heap(ABC):
+class HeapType(Enum):
+	MinHeap = 'MinHeap',
+	MaxHeap = 'MaxHeap'
 	
-	def __init__(self):
+
+class Heap:
+	
+	def __init__(self, heaptype: HeapType=HeapType.MinHeap):
 		self.values: List[int] = []
 		self.numvalues: int = 0
+		
+		if heaptype == HeapType.MinHeap:
+			self.comparator: Callable[[int, int], bool] = lambda x,y: x < y
+		else:
+			self.comparator: Callable[[int, int], bool] = lambda x,y: x > y
 		
 	@staticmethod
 	def getParentIndex(index: int) -> Optional[int]:
@@ -24,7 +34,7 @@ class Heap(ABC):
 		_right: int = (index * 2) + 2
 		return _right if _right < self.numvalues else None
 	
-	def getSmallerChildIndex(self, index: int) -> Optional[int]:
+	def getChildIndex(self, index: int) -> Optional[int]:
 		_left: int = self.getLeftIndex(index)
 		if _left is None:
 			return None
@@ -33,18 +43,7 @@ class Heap(ABC):
 		if _right is None:
 			return _left
 		
-		return _left if self.values[_left] < self.values[_right] else _right
-	
-	def getLargerChildIndex(self, index: int) -> Optional[int]:
-		_left: int = self.getLeftIndex(index)
-		if _left is None:
-			return None
-		
-		_right: int = self.getRightIndex(index)
-		if _right is None:
-			return _left
-		
-		return _left if self.values[_left] > self.values[_right] else _right
+		return _left if self.comparator(self.values[_left], self.values[_right]) else _right
 	
 	def swapValues(self, indexA: int, indexB: int) -> None:
 		_tmp: int = self.values[indexA]
@@ -76,24 +75,10 @@ class Heap(ABC):
 		self.heapifyUp()
 		return
 	
-	@abstractmethod
-	def heapifyUp(self) -> None:
-		raise Exception('Calling abstract heapifyUp() method')
-	
-	@abstractmethod
-	def heapifyDown(self) -> None:
-		raise Exception('Calling abstract heapifyDown() method')
-
-
-class MinHeap(Heap):
-	
-	def __init__(self):
-		Heap.__init__(self)
-	
 	def heapifyUp(self) -> None:
 		_index: int = self.numvalues - 1
-		_parent: int = Heap.getParentIndex(_index)
-		while _parent is not None and self.values[_parent] > self.values[_index]:
+		_parent: Optional[int] = Heap.getParentIndex(_index)
+		while _parent is not None and self.comparator(self.values[_index], self.values[_parent]):
 			self.swapValues(_index, _parent)
 			_index = _parent
 			_parent = Heap.getParentIndex(_parent)
@@ -102,35 +87,10 @@ class MinHeap(Heap):
 	
 	def heapifyDown(self) -> None:
 		_index: int = 0
-		_child: Optional[int] = self.getSmallerChildIndex(_index)
-		while _child is not None and self.values[_child] < self.values[_index]:
+		_child: Optional[int] = self.getChildIndex(_index)
+		while _child is not None and self.comparator(self.values[_child], self.values[_index]):
 			self.swapValues(_child, _index)
 			_index = _child
-			_child = self.getSmallerChildIndex(_index)
-		return
-	
-	
-class MaxHeap(Heap):
-	
-	def __init__(self):
-		Heap.__init__(self)
-	
-	def heapifyUp(self) -> None:
-		_index: int = self.numvalues - 1
-		_parent: int = Heap.getParentIndex(_index)
-		while _parent is not None and self.values[_parent] < self.values[_index]:
-			self.swapValues(_index, _parent)
-			_index = _parent
-			_parent = Heap.getParentIndex(_parent)
+			_child = self.getChildIndex(_index)
 			
-		return
-	
-	def heapifyDown(self) -> None:
-		_index: int = 0
-		_child: Optional[int] = self.getLargerChildIndex(_index)
-		while _child is not None and self.values[_child] > self.values[_index]:
-			self.swapValues(_child, _index)
-			_index = _child
-			_child = self.getLargerChildIndex(_index)
-		
 		return
