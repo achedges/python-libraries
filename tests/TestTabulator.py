@@ -7,8 +7,8 @@ class Test(unittest.TestCase):
 
 	def testTableOutput(self):
 		tabulator: Tabulator = Tabulator()
-		tabulator.addColumnDefinition(ColumnDefinition('Symbol'))
-		tabulator.addColumnDefinition(ColumnDefinition('Date'))
+		tabulator.addColumnDefinition(ColumnDefinition('Symbol')) # test with ColumnDefinition
+		tabulator.addColumnDefinition(columnName='Date') # test with name only
 		tabulator.addColumnDefinition(ColumnDefinition('Volume', FormatSpecifier.CommaSeparated))
 		tabulator.addColumnDefinition(ColumnDefinition('Avg Price', FormatSpecifier.Currency))
 		tabulator.addColumnDefinition(ColumnDefinition('Rate', FormatSpecifier.Percentage))

@@ -33,8 +33,11 @@ class Tabulator:
 	def __init__(self):
 		self.columnDefinitions: List[ColumnDefinition] = []
 
-	def addColumnDefinition(self, definition: ColumnDefinition):
-		self.columnDefinitions.append(definition)
+	def addColumnDefinition(self, definition: ColumnDefinition=None, columnName: str=None):
+		if definition is None:
+			self.columnDefinitions.append(ColumnDefinition(columnName))
+		else:
+			self.columnDefinitions.append(definition)
 		
 	def getTableHeader(self):
 		header: str = '\n'
