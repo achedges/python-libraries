@@ -25,9 +25,11 @@ def getDate(offset=0):
 
 def getCurrentDateTime(zone: str=''):
 	dt = datetime.datetime.now()
+	
 	if zone != '':
 		tz = pytz.timezone(zone)
-		dt = tz.localize(dt)
+		dt = dt.astimezone(tz)
+		
 	return dt
 
 
