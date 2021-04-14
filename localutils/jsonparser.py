@@ -193,19 +193,23 @@ class JsonParser:
 	@staticmethod
 	def __serializeList(lst: list, indent:int=0):
 		ret = ['[']
+		length: int = len(lst)
+		i: int = 0
 
 		if indent > 0:
 			ret.append('\n')
 
-		for i in range(len(lst)):
+		for item in lst:
 			ret.append('\t' * indent)
-			ret.append(JsonParser.__serializeValue(lst[i], indent))
+			ret.append(JsonParser.__serializeValue(item, indent))
 
-			if i < len(lst) - 1:
+			if i < length - 1:
 				ret.append(',')
 
 			if indent > 0:
 				ret.append('\n')
+				
+			i += 1
 
 		ret.append('{0}]'.format('\t' * (indent-1)))
 		return ''.join(ret)
@@ -215,7 +219,7 @@ class JsonParser:
 	def __serializeValue(value, indent:int=0):
 		if type(value) is dict:
 			return JsonParser.__serializeObject(value, indent+1 if indent > 0 else indent)
-		elif type(value) is list:
+		elif type(value) is list or type(value) is set:
 			return JsonParser.__serializeList(value, indent+1 if indent > 0 else indent)
 		elif type(value) is str:
 			return '"{0}"'.format(value)
