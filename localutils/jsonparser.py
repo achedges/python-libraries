@@ -1,3 +1,5 @@
+from typing import Union
+
 class JsonToken:
 
 	def __init__(self, token: str, text: str):
@@ -162,11 +164,15 @@ class JsonParser:
 
 
 	@staticmethod
-	def serializeJsonObject(jsonobj: dict, noformat:bool=False) -> str:
-		if type(jsonobj) is not dict:
+	def serializeJsonObject(json: Union[dict, list], noformat:bool=False) -> str:
+		if type(json) is dict:
+			return JsonParser.__serializeObject(json, 0 if noformat else 1)
+		
+		elif type(json) is list:
+			return JsonParser.__serializeList(json, 0 if noformat else 1)
+		
+		else:
 			raise Exception('JSON serializer needs an object input')
-
-		return JsonParser.__serializeObject(jsonobj, 0 if noformat else 1)
 
 
 	@staticmethod

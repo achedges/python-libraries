@@ -75,13 +75,13 @@ class Test(TestCase):
 		with open('serialized-full.json', 'r') as serializedFile:
 			expected = serializedFile.read()
 
-		jsonstring = JsonParser.serializeJsonObject(jsonobj=json)
+		jsonstring = JsonParser.serializeJsonObject(json=json)
 		self.assertEqual(expected, jsonstring, msg='Serialized JSON object does not match input')
 
 		with open('serialized-min.json', 'r') as serializedFile:
 			expected = serializedFile.read()
 
-		jsonstring = JsonParser.serializeJsonObject(jsonobj=json, noformat=True)
+		jsonstring = JsonParser.serializeJsonObject(json=json, noformat=True)
 		self.assertEqual(expected, jsonstring, msg='Serialized JSON object (no-format) does not match input')
 
 		return
