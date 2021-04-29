@@ -7,3 +7,6 @@ def gcd(a: int, b: int) -> int:
 	remainder: int = int(dividend % divisor)
 	
 	return gcd(divisor, remainder)
+
+def coprime(a: int, b: int) -> bool:
+	return gcd(a, b) == 1

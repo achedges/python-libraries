@@ -13,3 +13,10 @@ class Test(unittest.TestCase):
 		self.assertEqual(crypto.gcd(10, 100), 10)
 		
 		return
+	
+	def testCoprime(self):
+		
+		self.assertTrue(crypto.coprime(827735631, 1231462781))
+		self.assertFalse(crypto.coprime(12, 36))
+		
+		return
