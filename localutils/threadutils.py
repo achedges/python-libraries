@@ -9,15 +9,15 @@ class ThreadWaitMultiplier(Enum):
 class ThreadWait:
 
 	def __init__(self, initialMilliseconds: float=100, multiplier: ThreadWaitMultiplier=ThreadWaitMultiplier.Exponential):
-		self.initialwait: float = initialMilliseconds / 1000 # sleep() operates on seconds
-		self.waitval: float = self.initialwait
+		self.initialWaitSeconds: float = initialMilliseconds / 1000 # sleep() operates on seconds
+		self.waitSeconds: float = self.initialWaitSeconds
 		self.multiplier: ThreadWaitMultiplier = multiplier
 
 	def waitnext(self) -> None:
-		sleep(self.waitval)
-		self.waitval *= self.multiplier.value
+		sleep(self.waitSeconds)
+		self.waitSeconds *= self.multiplier.value
 		return
 
 	def reset(self) -> None:
-		self.waitval = self.initialwait
+		self.waitSeconds = self.initialWaitSeconds
 		return
