@@ -1,4 +1,4 @@
-from typing import Union
+from typing import Any, Dict, List, Optional, TypeVar, Union
 
 class JsonToken:
 
@@ -11,16 +11,18 @@ class JsonToken:
 
 
 class JsonParser:
+	
+	T = TypeVar('T')
 
 	def __init__(self, jsonstring: str):
 		self.input = jsonstring.strip()
 		self.n = len(self.input)
 		self.i = 0
-		self.result = dict()
+		self.result: Optional[Union[List, Dict[str,Any]]] = None
 		self.__stream = []
 
 
-	def parse(self):
+	def parse(self) -> Optional[Union[List, Dict[str,Any]]]:
 		self.__tokenizeInput()
 		self.i = 0
 
@@ -34,6 +36,34 @@ class JsonParser:
 			self.result = None
 
 		return self.result
+	
+	
+	def parseToType(self, userType: T) -> Optional[T]:
+		self.parse()
+		if self.result is None:
+			return None
+
+		return JsonParser.__parseUserType(self.result, userType)
+	
+	
+	@staticmethod
+	def __parseUserType(resultobj: Union[List, Dict[str, Any]], userType: T) -> Optional[Union[List, T]]:
+		if not isinstance(resultobj, list) and not isinstance(resultobj, dict):
+			return None
+		
+		if isinstance(resultobj, list):
+			return resultobj # if the parsed result is a list, there's no way to know which elements of the list should be instances 'T'
+		
+		t = userType()
+		for key in resultobj:
+			if hasattr(t, key):
+				attr = getattr(t, key)
+				if isinstance(resultobj[key], dict) and not isinstance(attr, dict): # if parsed JSON element is a dict, but the member attr is not
+					setattr(t, key, JsonParser.__parseUserType(resultobj[key], type(attr)))
+				else:
+					setattr(t, key, resultobj[key])
+				
+		return t
 
 
 	def __tokenizeInput(self):

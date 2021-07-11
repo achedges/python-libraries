@@ -85,3 +85,40 @@ class Test(TestCase):
 		self.assertEqual(expected, jsonstring, msg='Serialized JSON object (no-format) does not match input')
 
 		return
+	
+	
+	def testTypeParser(self):
+		
+		class NestedType:
+			def __init__(self):
+				self.nestedInt: int = 0
+				self.nestedBool: bool = False
+		
+		class ParsedType:
+			def __init__(self):
+				self.stringValue: str = ''
+				self.intValue: int = 0
+				self.floatValue: float = 0.
+				self.boolValue: bool = False
+				self.nullValue = None
+				self.objectValue: NestedType = NestedType()
+				self.dictValue: dict = {}
+		
+		with open('parse-type.json') as file:
+			json: str = file.read()
+			
+		parser: JsonParser = JsonParser(json)
+		obj: ParsedType = parser.parseToType(ParsedType)
+		
+		self.assertEqual(obj.stringValue, 'abc123')
+		self.assertEqual(obj.intValue, 717)
+		self.assertEqual(obj.floatValue, 3.14159)
+		self.assertEqual(obj.boolValue, True)
+		self.assertEqual(obj.nullValue, None)
+		self.assertEqual(obj.objectValue.nestedInt, 171)
+		self.assertEqual(obj.objectValue.nestedBool, False)
+		self.assertEqual(obj.dictValue['dictFloat'], 0.3)
+		self.assertEqual(obj.dictValue['dictNull'], None)
+		
+		return
+	

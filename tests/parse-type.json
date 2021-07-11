@@ -1,0 +1,15 @@
+{
+	"stringValue": "abc123",
+	"intValue": 717,
+	"floatValue": 3.14159,
+	"boolValue": true,
+	"nullValue": null,
+	"objectValue": {
+		"nestedInt": 171,
+		"nestedBool": false
+	},
+	"dictValue": {
+		"dictFloat": 0.3,
+		"dictNull": null
+	}
+}
