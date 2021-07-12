@@ -18,11 +18,11 @@ class JsonParser:
 		self.input = jsonstring.strip()
 		self.n = len(self.input)
 		self.i = 0
-		self.result: Optional[Union[List, Dict[str,Any]]] = None
+		self.result: Optional[Union[List[Any], Dict[str, Any]]] = None
 		self.__stream = []
 
 
-	def parse(self) -> Optional[Union[List, Dict[str,Any]]]:
+	def parse(self) -> Optional[Union[List[Any], Dict[str, Any]]]:
 		self.__tokenizeInput()
 		self.i = 0
 
@@ -47,7 +47,7 @@ class JsonParser:
 	
 	
 	@staticmethod
-	def __parseUserType(resultobj: Union[List, Dict[str, Any]], userType: T) -> Optional[Union[List, T]]:
+	def __parseUserType(resultobj: Union[List[Any], Dict[str, Any]], userType: T) -> Optional[Union[List[Any], T]]:
 		if not isinstance(resultobj, list) and not isinstance(resultobj, dict):
 			return None
 		
@@ -128,7 +128,7 @@ class JsonParser:
 
 
 	@staticmethod
-	def __parseLiteral(text):
+	def __parseLiteral(text) -> Any:
 		if text == 'true':
 			return True
 		elif text == 'false':
@@ -141,7 +141,7 @@ class JsonParser:
 			return int(text)
 
 
-	def __parseList(self):
+	def __parseList(self) -> List[Any]:
 		lst = []
 		token = self.__nextToken()
 		while token.token != ']':
@@ -161,7 +161,7 @@ class JsonParser:
 		return lst
 
 
-	def __parseObject(self):
+	def __parseObject(self) -> Dict[str, Any]:
 		obj = {}
 
 		key = self.__nextToken()
@@ -227,7 +227,7 @@ class JsonParser:
 
 
 	@staticmethod
-	def __serializeList(lst: list, indent:int=0):
+	def __serializeList(lst: list, indent:int=0) -> str:
 		ret = ['[']
 		length: int = len(lst)
 		i: int = 0
@@ -252,7 +252,7 @@ class JsonParser:
 
 
 	@staticmethod
-	def __serializeValue(value, indent:int=0):
+	def __serializeValue(value, indent:int=0) -> str:
 		if type(value) is dict:
 			return JsonParser.__serializeObject(value, indent+1 if indent > 0 else indent)
 		elif type(value) is list or type(value) is set:
