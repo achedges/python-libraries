@@ -7,11 +7,11 @@ class Test(unittest.TestCase):
 
 	def testTableOutput(self):
 		tabulator: Tabulator = Tabulator()
-		tabulator.addColumnDefinition(ColumnDefinition('Symbol')) # test with ColumnDefinition
-		tabulator.addColumnDefinition(columnName='Date') # test with name only
-		tabulator.addColumnDefinition(ColumnDefinition('Volume', FormatSpecifier.CommaSeparated))
-		tabulator.addColumnDefinition(ColumnDefinition('Avg Price', FormatSpecifier.Currency))
-		tabulator.addColumnDefinition(ColumnDefinition('Rate', FormatSpecifier.Percentage))
+		tabulator.addColumn(ColumnDefinition('Symbol')) # test with ColumnDefinition
+		tabulator.addColumn(columnName='Date') # test with name only
+		tabulator.addColumn(ColumnDefinition('Volume', FormatSpecifier.CommaSeparated))
+		tabulator.addColumn(ColumnDefinition('Avg Price', FormatSpecifier.Currency))
+		tabulator.addColumn(ColumnDefinition('Rate', FormatSpecifier.Percentage))
 
 		records: List[list] = [
 			[ 'ASDF', '20200930', 1234567, 1234.1234, .3319 ],
@@ -26,4 +26,11 @@ class Test(unittest.TestCase):
 
 		self.assertEqual(output, expected)
 
+		return
+	
+	def testVariableColumnInit(self):
+		tabulator: Tabulator = Tabulator("One", "Two", "Three")
+		output: str = tabulator.toTable([])
+		expected: str = '\nOne    Two    Three    \n-----------------------\nNo records found\n'
+		self.assertEqual(output, expected)
 		return

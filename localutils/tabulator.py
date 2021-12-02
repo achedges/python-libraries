@@ -30,10 +30,11 @@ class ColumnDefinition:
 		return f'{value}'
 
 class Tabulator:
-	def __init__(self):
-		self.columnDefinitions: List[ColumnDefinition] = []
+	def __init__(self, *colnames):
+		self.columnDefinitions: List[ColumnDefinition] = [ ColumnDefinition(col) for col in colnames ]
+			
 
-	def addColumnDefinition(self, definition: ColumnDefinition=None, columnName: str=None):
+	def addColumn(self, definition: ColumnDefinition=None, columnName: str=None):
 		if definition is None:
 			self.columnDefinitions.append(ColumnDefinition(columnName))
 		else:
