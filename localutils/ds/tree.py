@@ -5,6 +5,15 @@ from typing import Optional, List, Dict
 ### Node classes ###
 
 class TreeNode(ABC):
+	
+	__slots__ = [
+		'height',
+		'key',
+		'left',
+		'right',
+		'parent'
+	]
+	
 	def __init__(self, key: object):
 		self.height: int = 1
 		self.key: object = key
@@ -34,6 +43,9 @@ class KeyNode(TreeNode):
 
 
 class KeyValueNode(TreeNode):
+	
+	__slots__ = [ 'value' ]
+	
 	def __init__(self, key: object, value: object):
 		TreeNode.__init__(self, key)
 		self.value: object = value

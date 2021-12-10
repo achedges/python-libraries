@@ -1,5 +1,7 @@
 import os
 from datetime import datetime
+from io import TextIOWrapper
+from typing import Optional
 
 class Logger:
 	
@@ -11,7 +13,7 @@ class Logger:
 		if not os.path.isdir(self.logfilepath):
 			os.mkdir(self.logfilepath)
 			
-		self.__log = None
+		self.__log: Optional[TextIOWrapper] = None
 		
 	def __enter__(self):
 		self.__log = open(os.path.join(self.logfilepath, self.logfilename), 'w+')
@@ -23,7 +25,8 @@ class Logger:
 		self.__log.close()
 		
 	def log(self, msg: str, toConsole: bool=False) -> None:
-		self.__log.write(f'{msg}\n')
+		if not self.__log.closed:
+			self.__log.write(f'{msg}\n')
 		if toConsole:
 			print(msg)
 		
