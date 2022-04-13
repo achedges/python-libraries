@@ -27,6 +27,7 @@ class Logger:
 	def log(self, msg: str, toConsole: bool=False) -> None:
 		if not self.__log.closed:
 			self.__log.write(f'{msg}\n')
+			self.__log.flush()
 		if toConsole:
 			print(msg)
 		
