@@ -1,14 +1,16 @@
 import os
 from datetime import datetime
 from io import TextIOWrapper
+from localutils import dateutils
 from typing import Optional
 
 class Logger:
 	
-	def __init__(self, logfilepath: str='logs', logfileprefix: str='log'):
-		self.logfilepath = logfilepath
-		self.logfileprefix = logfileprefix
-		self.logfilename = f'{logfileprefix}_{str(datetime.now()).replace("-", "").replace(" ", "").replace(":", "").replace(".", "_")}.txt'
+	def __init__(self, logfilepath: str='logs', logfileprefix: str='log', timestampZone: str=''):
+		self.logfilepath: str = logfilepath
+		self.logfileprefix: str = logfileprefix
+		self.logfilename: str = f'{logfileprefix}_{str(datetime.now()).replace("-", "").replace(" ", "").replace(":", "").replace(".", "_")}.txt'
+		self.timestampZone: str = timestampZone
 		
 		if not os.path.isdir(self.logfilepath):
 			os.mkdir(self.logfilepath)
@@ -25,11 +27,12 @@ class Logger:
 		self.__log.close()
 		
 	def log(self, msg: str, toConsole: bool=False) -> None:
+		logmsg: str = f'{dateutils.getCurrentDateTime(self.timestampZone)} {msg}'
 		if not self.__log.closed:
-			self.__log.write(f'{msg}\n')
+			self.__log.write(f'{logmsg}\n')
 			self.__log.flush()
 		if toConsole:
-			print(msg)
+			print(logmsg)
 		
 		
 if __name__ == '__main__':
