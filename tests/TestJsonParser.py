@@ -15,7 +15,7 @@ class Test(TestCase):
 
 		self.assertEqual(len(result), 1, msg='[result] dict is not the right size')
 		self.assertTrue('object' in result, msg='[result] dict does not contain [object] dict')
-		self.assertEqual(len(result['object']), 6, msg='[object] dict is not the right size')
+		self.assertEqual(len(result['object']), 7, msg='[object] dict is not the right size')
 
 		self.assertTrue('string' in result['object'], msg='[object] dict does not contain [string]')
 		self.assertEqual(result['object']['string'], 'stringvalue', msg='Incorrect value found at [object][string]')
@@ -25,6 +25,9 @@ class Test(TestCase):
 
 		self.assertTrue('float' in result['object'], msg='[object] dict does not contain [float]')
 		self.assertEqual(result['object']['float'], 1.123, msg='Incorrect value found at [object][float]')
+		
+		self.assertTrue('scientific' in result['object'], msg='[object dict does not contain [scientific]')
+		self.assertEqual(result['object']['scientific'], 1000000.0, msg='Incorrect value found at [object][scientific]')
 
 		self.assertTrue('bool' in result['object'], msg='[object] dict does not contain [bool]')
 		self.assertEqual(result['object']['bool'], True, msg='Incorrect value found at [object][bool]')

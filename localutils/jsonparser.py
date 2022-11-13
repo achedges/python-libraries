@@ -135,7 +135,7 @@ class JsonParser:
 			return False
 		elif text == 'null':
 			return None
-		elif '.' in text:
+		elif '.' in text or 'e' in text:
 			return float(text)
 		else:
 			return int(text)
