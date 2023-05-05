@@ -15,10 +15,10 @@ class Test(TestCase):
 
 		self.assertEqual(len(result), 1, msg='[result] dict is not the right size')
 		self.assertTrue('object' in result, msg='[result] dict does not contain [object] dict')
-		self.assertEqual(len(result['object']), 7, msg='[object] dict is not the right size')
+		self.assertEqual(len(result['object']), 8, msg='[object] dict is not the right size')
 
 		self.assertTrue('string' in result['object'], msg='[object] dict does not contain [string]')
-		self.assertEqual(result['object']['string'], 'stringvalue', msg='Incorrect value found at [object][string]')
+		self.assertEqual('stringvalue', result['object']['string'], msg='Incorrect value found at [object][string]')
 
 		self.assertTrue('int' in result['object'], msg='[object] dict does not contain [int]')
 		self.assertEqual(result['object']['int'], 1, msg='Incorrect value found at [object][int]')
@@ -40,6 +40,9 @@ class Test(TestCase):
 		self.assertEqual(result['object']['list'][0], 'one', msg='Incorrect value found at [object][list][0]')
 		self.assertEqual(result['object']['list'][1], 'two', msg='Incorrect value found at [object][list][1]')
 		self.assertEqual(result['object']['list'][2], '"three"', msg='Incorrect value found at [object][list][2]')
+		
+		self.assertTrue('escapes' in result['object'], msg='[object] dict does not contain [emptyUrl]')
+		self.assertEqual(result['object']['escapes'], '\\\\', msg='Incorrect value found at [object][emptyUrl]')
 
 		return
 

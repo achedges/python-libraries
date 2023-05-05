@@ -1,6 +1,7 @@
 {
 	"object": {
 		"string": "stringvalue",
+		"escapes": "\\",
 		"int": 1,
 		"float": 1.123,
 		"scientific": 1e+06,

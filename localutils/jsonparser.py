@@ -76,6 +76,8 @@ class JsonParser:
 			if self.i <= self.n:
 				break
 
+		isEscaped: bool = False
+		
 		while self.i < self.n:
 			if self.input[self.i] in _WS:
 				self.i += 1
@@ -88,13 +90,19 @@ class JsonParser:
 				_id = []
 				self.i += 1
 				while self.i < self.n:
-					if self.input[self.i] == '"' and self.input[self.i-1] != '\\':
+					if self.input[self.i] == '\\':
+						isEscaped = not isEscaped # toggle
+						
+					if self.input[self.i] == '"' and not isEscaped:
 						break
-
-					if self.input[self.i] == '"' and self.input[self.i-1] == '\\':
+						
+					if self.input[self.i] == '"' and isEscaped:
 						_id[-1] = '"' # double-quotes are escaped, so replace the backslash
 					else:
 						_id.append(self.input[self.i])
+						
+					if self.input[self.i] != '\\':
+						isEscaped = False
 
 					self.i += 1
 
@@ -175,9 +183,9 @@ class JsonParser:
 			value = self.__nextToken()
 
 			if key.token != 'ID':
-				raise Exception('Invalid token detected for object key: {0}'.format(key.token))
+				raise Exception(f'Invalid token detected for object key: {key.text} ({key.token})')
 			if separator.token != ':':
-				raise Exception('Invalid token detected for key-value separator: {0}'.format(separator.token))
+				raise Exception(f'Invalid token detected for key-value separator: {key.text} ({key.token})')
 
 			if value.token == '{':
 				obj[key.text] = self.__parseObject()
@@ -202,7 +210,7 @@ class JsonParser:
 			return JsonParser.__serializeList(json, 0 if noformat else 1)
 		
 		else:
-			raise Exception('JSON serializer needs an object input')
+			raise Exception('JSON serializer needs a dict or list input')
 
 
 	@staticmethod
